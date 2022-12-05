@@ -1,25 +1,15 @@
-import React, { useEffect } from 'react'
-import { getAllSongs } from './endpoints';
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import Homepage from './components/Homepage'
 
 function App() {
-
-  const [songs, setSongs] = React.useState([]);
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getAllSongs();
-      setSongs(response.data);
-    }
-    fetchData();
-  }, [songs]);
-
   return (
     <div>
-      <div className="text-center">
-        {songs.map((song) => (<h1 key={song.id} >{song.name}</h1>))}
-      </div>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+      </Routes>
     </div>
   )
 }
 
-export default App;
+export default App

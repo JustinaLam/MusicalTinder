@@ -13,7 +13,10 @@ app.listen(port, async () => {
   console.log(`server is running on port ${port}`);
 });
 
+// get next recommended songs
+app.get("/recommendedSongs", routes.recommendedSongs);
+
 // get recent songs
-app.get("/recentsongs", routes.recentSongs);
+app.get("/recentSongs", routes.recentSongs);
 
 //setting up a server, connecting it to database, and creating route that queries your database
