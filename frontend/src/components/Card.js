@@ -5,7 +5,7 @@ const Card = ({song}) => {
       <div className='w-full h-full p-4 flex flex-col'>
         <div className="flex flex-col items-center">
           <img src="https://upload.wikimedia.org/wikipedia/en/1/1a/RageAgainsttheMachineRageAgainsttheMachine.jpg" alt="Italian Trulli" 
-            className="rounded shadow-md w-full" draggable="false" ondragstart="return false;" />
+            className="rounded shadow-md w-full" draggable="false" />
         </div>
         <div className="flex flex-col pt-6 p-4">
           <h1 className="text-3xl mb-2">Testify</h1>
