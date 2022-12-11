@@ -49,30 +49,30 @@ async function recommendedSongs(req, res) {
 
 async function defaultPopularSongs(req, res) {
   connection.query(`WITH PopularArtists AS (
-      SELECT artist_id, artist_name, ROW_NUMBER() OVER (ORDER BY listeners DESC) AS row
-      FROM Artists
-      LIMIT 3
-    )
-    (SELECT S.name AS song_name, P.artist_name
+    SELECT ROW_NUMBER() OVER (ORDER BY listeners DESC) row_num, artist_id, artist_name
+    FROM Artists
+    ORDER BY listeners DESC
+    LIMIT 3)
+    (SELECT S.track_name AS track_name, artist_name
     FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
           JOIN PopularArtists P ON B.artist_id = P.artist_id
-    WHERE P.row = 1
+    WHERE P.row_num = 1
     ORDER BY S.release_date DESC
     LIMIT 4)
     UNION 
-    (SELECT S.name AS song_name, P.artist_name
+    (SELECT S.track_name AS track_name, artist_name
     FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
           JOIN PopularArtists P ON B.artist_id = P.artist_id
-    WHERE P.row = 2
+    WHERE P.row_num = 2
     ORDER BY S.release_date DESC
     LIMIT 3)
     UNION
-    (SELECT S.name AS song_name, P.artist_name
+    (SELECT S.track_name AS track_name, artist_name
     FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
           JOIN PopularArtists P ON B.artist_id = P.artist_id
-    WHERE P.row = 3
+    WHERE P.row_num = 3
     ORDER BY S.release_date DESC
-    LIMIT 3);`, (error, results) => {
+    LIMIT 3)`, (error, results) => {
     if (error) {
       throw new Error(`error getting default recent popular songs ${error.message}`);
     } else if (results) {
