@@ -1,5 +1,4 @@
 const mysql = require('mysql');
-// const config = require('./config.js')
 require('dotenv').config();
 
 const connection = mysql.createConnection({
@@ -12,27 +11,34 @@ const connection = mysql.createConnection({
 connection.connect();
 
 async function recommendedSongs(req, res) {
-  const { id, artist, album } = req.query;
+  const { song1, song2, song3 } = req.query;
 
-  // query for songs in album, by a collaborative artist; instead can query for songs with similar characteristics
-  connection.query(`(SELECT S.track_name AS name
-  FROM Songs S JOIN Albums A ON S.album_id = A.album_id
-  WHERE A.album_name = ${album})
-  LIMIT 5
-  UNION 
-  (WITH ArtistSongs AS (
-    SELECT S.track_id
-    FROM Songs S JOIN SongBy B ON S.track_id = B.track_id JOIN Artists A ON B.artist_id = A.artist_id
-    WHERE A.artist_name = ${artist}
-  ), Collaborators AS (
-  SELECT DISTINCT A.artist_id
-  FROM Artists A JOIN SongBy B ON A.artist_id = B.artist_id
-  WHERE B.track_id IN ArtistSongs AND A.artist_name <> ${artist}
-  )
-  SELECT S.track_name as name
-  FROM Songs S JOIN SongBy B ON S.track_id = B.track_id JOIN Collaborators C ON B.artist_id = C.artist_id
-  LIMIT 5)
-  `, (error, results) => {
+  const acousticness = song1.acousticness + song2.acousticness + song3.acousticness;
+  const acousticness_low = acousticness * 2 / 5;
+  const acousticness_high = acousticness * 3 / 5;
+  const danceability = song1.danceability + song2.danceability + song3.danceability;
+  const danceability_low = danceability * 2 / 5;
+  const danceability_high = danceability * 3 / 5;
+  const energy_low = (song1.energy + song2.energy + song3.energy) * 2 / 5;
+  const energy_high = (song1.energy + song2.energy + song3.energy) * 3 / 5;
+  const instrumentalness_low = (song1.instrumentalness + song2.instrumentalness + song3.instrumentalness) * 2 / 5;
+  const instrumentalness_high = (song1.instrumentalness + song2.instrumentalness + song3.instrumentalness) * 3 / 5;
+  const tempo_low = (song1.tempo + song2.tempo + song3.tempo) * 2 / 5;
+  const tempo_high = (song1.tempo + song2.tempo + song3.tempo) * 3 / 5;
+  const valence_low = (song1.valence + song2.valence + song3.valence) * 2 / 5;
+  const valence_high = (song1.valence + song2.valence + song3.valence) * 3 / 5;
+  const key = (song1.key + song2.key + song3.key) / 2;
+
+  connection.query(`SELECT track_id AS id, track_name AS name
+    FROM Songs
+    WHERE danceability BETWEEN ${danceability_low} AND ${danceability_high} AND
+      energy BETWEEN ${energy_low} AND ${energy_high} AND
+      music_key = ${key} AND
+      acousticness BETWEEN ${acousticness_low} AND ${acousticness_high} AND
+      instrumentalness BETWEEN ${instrumentalness_low} AND ${instrumentalness_high} AND
+      valence BETWEEN ${valence_low} AND ${valence_high} AND
+      tempo BETWEEN ${tempo_low} AND ${tempo_high}
+      LIMIT 5;`, (error, results) => {
     if (error) {
       throw new Error(`error getting recommended songs ${error.message}`);
     } else if (results) {
@@ -41,13 +47,60 @@ async function recommendedSongs(req, res) {
   });
 }
 
-async function recentSongs(req, res) {
-  connection.query(`SELECT S.track_id AS id, S.track_name AS name
-    FROM Songs S
+async function defaultPopularSongs(req, res) {
+  connection.query(`WITH PopularArtists AS (
+      SELECT artist_id, artist_name, ROW_NUMBER() OVER (ORDER BY listeners DESC) AS row
+      FROM Artists
+      LIMIT 3
+    )
+    (SELECT S.name AS song_name, P.artist_name
+    FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
+          JOIN PopularArtists P ON B.artist_id = P.artist_id
+    WHERE P.row = 1
     ORDER BY S.release_date DESC
-    LIMIT 10;`, (error, results) => {
+    LIMIT 4)
+    UNION 
+    (SELECT S.name AS song_name, P.artist_name
+    FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
+          JOIN PopularArtists P ON B.artist_id = P.artist_id
+    WHERE P.row = 2
+    ORDER BY S.release_date DESC
+    LIMIT 3)
+    UNION
+    (SELECT S.name AS song_name, P.artist_name
+    FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
+          JOIN PopularArtists P ON B.artist_id = P.artist_id
+    WHERE P.row = 3
+    ORDER BY S.release_date DESC
+    LIMIT 3);`, (error, results) => {
     if (error) {
-      throw new Error(`error getting recent songs ${error.message}`);
+      throw new Error(`error getting default recent popular songs ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function recentSongs(req, res) {
+  connection.query(`SELECT track_id, track_name
+  FROM Songs
+  ORDER BY release_date DESC
+  LIMIT 50;`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting most recent songs ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function song(req, res) {
+  const { id } = req.params;
+  connection.query(`SELECT *
+  FROM Songs
+  WHERE track_id = ${id};`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting song ${error.message}`);
     } else if (results) {
       res.json({ data: results })
     }
@@ -56,5 +109,7 @@ async function recentSongs(req, res) {
 
 module.exports = {
   recommendedSongs,
+  defaultPopularSongs,
   recentSongs,
+  song
 }

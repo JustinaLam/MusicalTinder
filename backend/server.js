@@ -16,7 +16,11 @@ app.listen(port, async () => {
 // get next recommended songs
 app.get("/recommendedSongs", routes.recommendedSongs);
 
-// get recent songs
+// get default songs
+app.get("/defaultPopularSongs", routes.defaultPopularSongs);
+
+// get most recent songs
 app.get("/recentSongs", routes.recentSongs);
 
-//setting up a server, connecting it to database, and creating route that queries your database
+// get song info
+app.get("/song/:id", routes.song);
