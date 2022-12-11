@@ -1,31 +1,22 @@
 import React, {useState} from 'react'
 
-const Card = (trackName, artistName) => {
+const Card = ({song}) => {
     return (
-      <h1>test</h1>
-        // <Container>
-        //     testing
-        //     <Image src="https://user-images.githubusercontent.com/88551260/205755117-efe9b83b-33a4-445e-988c-b074076cc993.png"/>
-        // </Container>
+      <div className='w-full h-full p-4 flex flex-col'>
+        <div className="flex flex-col items-center">
+          <img src="https://upload.wikimedia.org/wikipedia/en/1/1a/RageAgainsttheMachineRageAgainsttheMachine.jpg" alt="Italian Trulli" 
+            className="rounded shadow-md w-full" draggable="false" />
+        </div>
+        <div className="flex flex-col pt-6 p-4">
+          <h1 className="text-3xl mb-2">Testify</h1>
+          <h2 className="text-xl mb-2">The Battle of Los Angeles</h2>
+          <h3 className="text-lg mb-6">Rage Against the Machine</h3>
+          {/* <a href={`https://open.spotify.com/track/${song.id}`} className="text-blue-600">Play on Spotify</a> */}
+          <a href={`https://open.spotify.com/track/`} className="text-blue-600">Play on Spotify</a>
+        </div>
+      </div>
     )
 }
 
-// const Container = styled.div`
-//     padding: 20px;
-//     height: 50%;
-//     width: 30%;
-//     background: #fdfdfd;
-//     border-radius: 10px;
-//     z-index: 2;
-//     display: flex;
-//     flex-direction: row;
-//     align-items: center;
-// `
-
-// const Image = styled.img`
-//     width: 50%;
-//     height: 50%;
-//     margin: auto;
-// `
 
 export default Card;
