@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TinderCard from 'react-tinder-card'
 // import { useNavigate } from "react-router-dom";
 import { AiOutlineSearch, AiFillHome } from 'react-icons/ai';
 
 import Card from "./Card";
+import { getDefaultPopularSongs } from "../endpoints";
 
 function Homepage() {
     // const navigate = useNavigate();
+
+    const [songs, setSongs] = useState([]);
+
+    useEffect(() => {
+        async function fetchSongs() {
+        const data = await getDefaultPopularSongs();
+        setSongs(data);
+        }
+        fetchSongs();
+    }, []);
 
     const onSwipe = (direction) => {
       console.log('You swiped: ' + direction)
@@ -24,12 +35,11 @@ function Homepage() {
             </div>
             <div className="flex h-full align-middle">
                 <div className="m-auto">
-                    <TinderCard onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={['up', 'down']} className="w-[400px] h-[600px] bg-white select-none rounded shadow-xl hover:shadow-2xl ease-in absolute transition-shadow">
-                        <Card />
+                    {songs.map((song) => 
+                    <TinderCard key={song.track_id} onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={['up', 'down']} className="w-[400px] h-[600px] bg-white select-none rounded shadow-xl hover:shadow-2xl ease-in absolute transition-shadow">
+                        <Card song={song} />
                     </TinderCard>
-                    {/* <TinderCard onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={['right', 'left']} className="w-[400px] h-[600px] bg-white select-none rounded shadow-xl hover:shadow-2xl ease-in transition-shadow absolute top-0">
-                        <Card />
-                    </TinderCard> */}
+                    )}
                     <div className="w-[400px] h-[600px]"></div>
                 </div>
             </div>
