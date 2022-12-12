@@ -13,7 +13,8 @@ function Homepage() {
 
     useEffect(() => {
         async function fetchSongs() {
-        const data = await getDefaultPopularSongs();
+        const data = ["song1", "song2"];
+        // await getDefaultPopularSongs();
         setSongs(data);
         }
         fetchSongs();
@@ -28,8 +29,8 @@ function Homepage() {
     }
 
     return (
-        <div className="w-full h-screen flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-24">
-            <div className="w-5/6 flex flex-row justify-center space-x-10">
+        <div className="w-full h-screen flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-16">
+            <div className="w-5/6 flex flex-row justify-center space-x-10 mb-4">
                 <AiFillHome size={30} style={{color: "white"}} />
                 <AiOutlineSearch size={30} style={{color: "white"}} />
             </div>
