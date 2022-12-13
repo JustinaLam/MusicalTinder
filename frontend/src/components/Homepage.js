@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import TinderCard from 'react-tinder-card'
-// import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { AiOutlineSearch, AiFillHome } from 'react-icons/ai';
 
 import Card from "./Card";
 import { getDefaultPopularSongs } from "../endpoints";
 
 function Homepage() {
-    // const navigate = useNavigate();
-
     const [songs, setSongs] = useState([]);
 
     useEffect(() => {
@@ -31,8 +29,12 @@ function Homepage() {
     return (
         <div className="w-full h-screen flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-16">
             <div className="w-5/6 flex flex-row justify-center space-x-10 mb-4">
-                <AiFillHome size={30} style={{color: "white"}} />
-                <AiOutlineSearch size={30} style={{color: "white"}} />
+                <NavLink to="/">
+                    <AiFillHome size={30} style={{color: "white", cursor: "pointer"}}/>
+                </NavLink>
+                <NavLink to="/search">
+                    <AiOutlineSearch size={30} style={{color: "white", cursor: "pointer"}}/>
+                </NavLink>
             </div>
             <div className="flex h-full align-middle">
                 <div className="m-auto">

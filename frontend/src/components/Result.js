@@ -3,9 +3,9 @@ import React from "react";
 
 function Result({result}) {
     return (
-        <div className="w-[800px] h-[360px] rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
+        <div className="w-3/5 h-[300px] rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <img src="https://upload.wikimedia.org/wikipedia/en/1/1a/RageAgainsttheMachineRageAgainsttheMachine.jpg" alt="Italian Trulli" 
-            className="w-[300px] h-[300px] rounded shadow-md w-full" draggable="false" />
+            className="w-[240px] h-[240px] rounded shadow-md w-full" draggable="false" />
             <div className="flex flex-col items-start">
                 <h3 className="font-medium text-3xl">{result.name}</h3>
                 {Object.keys(result).map((key, index) => {

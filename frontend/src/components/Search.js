@@ -56,7 +56,7 @@ function Search() {
             "album3": "The Battle of Los Angeles",
             "album4": "The Battle of Los Angeles",
             "album5": "The Battle of Los Angeles",
-            "album5": "The Battle of Los Angeles",
+            "album6": "The Battle of Los Angeles",
             "album7": "The Battle of Los Angeles",
             "album8": "The Battle of Los Angeles",
             "album9": "The Battle of Los Angeles",
@@ -69,7 +69,7 @@ function Search() {
             "album3": "The Battle of Los Angeles",
             "album4": "The Battle of Los Angeles",
             "album5": "The Battle of Los Angeles",
-            "album5": "The Battle of Los Angeles",
+            "album6": "The Battle of Los Angeles",
             "album7": "The Battle of Los Angeles",
             "album8": "The Battle of Los Angeles",
             "album9": "The Battle of Los Angeles",
@@ -86,31 +86,31 @@ function Search() {
                 <AiOutlineSearch size={30} />
                 <input type="text" placeholder="Search for a song, artist, or album!" className="w-[500px] outline-none" />
             </div>
-            <div className="w-1/2 bg-white mt-4 mb-6 pl-8 pr-8 pt-4 pb-4 rounded opacity-90 flex flex-row space-x-4">
+            <div className="w-3/5 bg-white mt-4 mb-2 pl-8 pr-8 pt-4 pb-4 rounded opacity-90 flex flex-row space-x-4">
                 <div className="w-1/2 text-left">
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Acousticness</div>
-                        <div className="w-2/3"><Slider range defaultValue={[25, 75]} onChange={handleAcousticnessChange} /></div>
+                        <div className="w-1/2 ml-5"><Slider range defaultValue={[25, 75]} onChange={handleAcousticnessChange} /></div>
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Danceability</div>
-                        <div className="w-2/3"><Slider range defaultValue={[25, 75]} onChange={handleDanceabilityChange} /></div>
+                        <div className="w-1/2 ml-5"><Slider range defaultValue={[25, 75]} onChange={handleDanceabilityChange} /></div>
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Energy</div>
-                        <div className="w-2/3"><Slider range defaultValue={[25, 75]} onChange={handleEnergyChange} /></div>
+                        <div className="w-1/2 ml-5"><Slider range defaultValue={[25, 75]} onChange={handleEnergyChange} /></div>
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Instrumentalness</div>
-                        <div className="w-2/3"><Slider range defaultValue={[25, 75]} onChange={handleInstrumentalnessChange} /></div>
+                        <div className="w-1/2 ml-5"><Slider range defaultValue={[25, 75]} onChange={handleInstrumentalnessChange} /></div>
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Loudness</div>
-                        <div className="w-2/3"><Slider range defaultValue={[25, 75]} onChange={handleLoudnessChange} /></div>
+                        <div className="w-1/2 ml-5"><Slider range defaultValue={[25, 75]} onChange={handleLoudnessChange} /></div>
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Valence</div>
-                        <div className="w-2/3"><Slider range defaultValue={[25, 75]} onChange={handleValenceChange} /></div>
+                        <div className="w-1/2 ml-5"><Slider range defaultValue={[25, 75]} onChange={handleValenceChange} /></div>
                     </div>
                 </div>
                 <div className="w-1/2 text-left">
@@ -119,7 +119,7 @@ function Search() {
                         <div>
                             <Select
                                 showSearch
-                                className="w-2/3 w-[200px]"
+                                className="w-2/3 w-[175px]"
                                 placeholder="Select a genre"
                                 optionFilterProp="children"
                                 filterOption={(input, option) =>
@@ -132,18 +132,18 @@ function Search() {
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Release Year</div>
-                        <div className="w-2/3"><Slider min={1900} max={2022} defaultValue={1960} onChange={handleYearChange} /></div>
+                        <div className="w-1/2"><Slider min={1900} max={2022} defaultValue={1960} onChange={handleYearChange} /></div>
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Popularity</div>
-                        <div className="w-2/3"><Slider min={0} max={100} defaultValue={50} onChange={handlePopularityChange} /></div>
+                        <div className="w-1/2"><Slider min={0} max={100} defaultValue={50} onChange={handlePopularityChange} /></div>
                     </div>
                     <div className="flex flex-row">
                         <div className="w-1/3 mt-1">Country</div>
                         <div>
                             <Select
                                 showSearch
-                                className="w-2/3 w-[200px]"
+                                className="w-2/3 w-[175px]"
                                 placeholder="Select a country"
                                 optionFilterProp="children"
                                 filterOption={(input, option) =>
