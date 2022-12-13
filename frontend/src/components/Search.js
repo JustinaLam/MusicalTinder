@@ -114,7 +114,27 @@ function Search() {
                     </div>
                 </div>
                 <div className="w-1/2 text-left">
-                    <div className="flex flex-row">
+                <div className="flex flex-row mb-1">
+                        <div className="w-1/3 mt-1">Search Type *</div>
+                        <div>
+                            <Select
+                                showSearch
+                                className="w-2/3 w-[175px]"
+                                placeholder="Select a genre"
+                                optionFilterProp="children"
+                                defaultValue="Song"
+                                filterOption={(input, option) =>
+                                    (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={[
+                                    { value: "Song" },
+                                    { value: "Artist" },
+                                    { value: "Album" },
+                                ]}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex flex-row mb-1">
                         <div className="w-1/3 mt-1">Genre</div>
                         <div>
                             <Select
@@ -130,15 +150,15 @@ function Search() {
                             />
                         </div>
                     </div>
-                    <div className="flex flex-row">
+                    <div className="flex flex-row mb-1">
                         <div className="w-1/3 mt-1">Release Year</div>
                         <div className="w-1/2"><Slider min={1900} max={2022} defaultValue={1960} onChange={handleYearChange} /></div>
                     </div>
-                    <div className="flex flex-row">
+                    <div className="flex flex-row mb-1">
                         <div className="w-1/3 mt-1">Popularity</div>
                         <div className="w-1/2"><Slider min={0} max={100} defaultValue={50} onChange={handlePopularityChange} /></div>
                     </div>
-                    <div className="flex flex-row">
+                    <div className="flex flex-row mb-1">
                         <div className="w-1/3 mt-1">Country</div>
                         <div>
                             <Select
