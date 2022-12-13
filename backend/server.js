@@ -24,3 +24,9 @@ app.get("/recentSongs", routes.recentSongs);
 
 // get song info
 app.get("/song/:id", routes.song);
+
+// get artist name(s) given track id
+app.get("/artist/:trackid", routes.artistForTrack);
+
+// get album name given album id
+app.get("/album/:albumid", routes.albumForTrack);
