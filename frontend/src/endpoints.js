@@ -37,3 +37,12 @@ export const getSong = async (id) => {
     throw new Error('error getting song');
   }
 }
+
+export const getGenres = async () => {
+  try {
+    const response = await axios.get(`${rootURL}/genres`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting genres');
+  }
+}

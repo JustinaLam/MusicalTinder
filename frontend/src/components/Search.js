@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { AiOutlineSearch } from 'react-icons/ai';
 import {Slider, Select} from 'antd';
 
@@ -44,6 +44,21 @@ function Search() {
     const handlePopularityChange = (value) => {
         setPopularity(value);
     }
+
+    const [genres, setGenres] = useState([]);
+
+    // get list of genres
+    useEffect(() => {
+        const getGenres = async () => {
+            const res = await getGenres();
+            const g = [];
+            res.map((genre) => {
+                return g.push({value: genre});
+            });
+            setGenres(g);
+        }
+        getGenres();
+    }, []);
 
     return (
         <div className="w-full h-screen flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-12">
@@ -93,8 +108,7 @@ function Search() {
                                     filterOption={(input, option) =>
                                         (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
                                     }
-                                    options={[
-                                    ]}
+                                    options={genres}
                                 />
                             </div>
                         </div>

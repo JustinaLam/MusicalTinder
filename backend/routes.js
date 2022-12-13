@@ -107,9 +107,21 @@ async function song(req, res) {
   });
 }
 
+// TODO: update database to include genre
+async function genres(req, res) {
+  connection.query(`SELECT DISTINCT genre FROM Genres`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting genres ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
 module.exports = {
   recommendedSongs,
   defaultPopularSongs,
   recentSongs,
-  song
+  song,
+  genres
 }
