@@ -11,34 +11,38 @@ const connection = mysql.createConnection({
 connection.connect();
 
 async function recommendedSongs(req, res) {
-  const { song1, song2, song3 } = req.query;
+  const { acousticness1, danceability1, energy1, instrumentalness1, tempo1, valence1,
+    acousticness2, danceability2, energy2, instrumentalness2, tempo2, valence2,
+    acousticness3, danceability3, energy3, instrumentalness3, tempo3, valence3  } = req.query;
 
-  const acousticness = song1.acousticness + song2.acousticness + song3.acousticness;
-  const acousticness_low = acousticness * 2 / 5;
-  const acousticness_high = acousticness * 3 / 5;
-  const danceability = song1.danceability + song2.danceability + song3.danceability;
-  const danceability_low = danceability * 2 / 5;
-  const danceability_high = danceability * 3 / 5;
-  const energy_low = (song1.energy + song2.energy + song3.energy) * 2 / 5;
-  const energy_high = (song1.energy + song2.energy + song3.energy) * 3 / 5;
-  const instrumentalness_low = (song1.instrumentalness + song2.instrumentalness + song3.instrumentalness) * 2 / 5;
-  const instrumentalness_high = (song1.instrumentalness + song2.instrumentalness + song3.instrumentalness) * 3 / 5;
-  const tempo_low = (song1.tempo + song2.tempo + song3.tempo) * 2 / 5;
-  const tempo_high = (song1.tempo + song2.tempo + song3.tempo) * 3 / 5;
-  const valence_low = (song1.valence + song2.valence + song3.valence) * 2 / 5;
-  const valence_high = (song1.valence + song2.valence + song3.valence) * 3 / 5;
-  const key = (song1.key + song2.key + song3.key) / 2;
+  const acousticness = Number(acousticness1) + Number(acousticness2) + Number(acousticness3);
+  const acousticness_low = acousticness / 3;
+  const acousticness_high = acousticness * 2 / 3;
+  const danceability = Number(danceability1) + Number(danceability2) + Number(danceability3);
+  const danceability_low = danceability / 3;
+  const danceability_high = danceability * 2 / 3;
+  const energy = Number(energy1) + Number(energy2) + Number(energy3);
+  const energy_low = energy / 3;
+  const energy_high = energy * 2 / 3;
+  const instrumentalness = Number(instrumentalness1) + Number(instrumentalness2) + Number(instrumentalness3);
+  const instrumentalness_low = instrumentalness / 3;
+  const instrumentalness_high = instrumentalness * 2 / 3;
+  const tempo = Number(tempo1) + Number(tempo2) + Number(tempo3);
+  const tempo_low = tempo / 3;
+  const tempo_high = tempo * 2 / 3;
+  const valence = Number(valence1) + Number(valence2) + Number(valence3);
+  const valence_low = valence / 3;
+  const valence_high = valence * 2 / 3;
 
-  connection.query(`SELECT track_id AS id, track_name AS name
+  connection.query(`SELECT *
     FROM Songs
     WHERE danceability BETWEEN ${danceability_low} AND ${danceability_high} AND
       energy BETWEEN ${energy_low} AND ${energy_high} AND
-      music_key = ${key} AND
       acousticness BETWEEN ${acousticness_low} AND ${acousticness_high} AND
       instrumentalness BETWEEN ${instrumentalness_low} AND ${instrumentalness_high} AND
       valence BETWEEN ${valence_low} AND ${valence_high} AND
       tempo BETWEEN ${tempo_low} AND ${tempo_high}
-      LIMIT 5;`, (error, results) => {
+      LIMIT 10;`, (error, results) => {
     if (error) {
       throw new Error(`error getting recommended songs ${error.message}`);
     } else if (results) {
@@ -97,8 +101,8 @@ async function recentSongs(req, res) {
 async function song(req, res) {
   const { id } = req.params;
   connection.query(`SELECT *
-  FROM Songs
-  WHERE track_id = ${id};`, (error, results) => {
+  From Songs
+  WHERE track_name = 'Testify';`, (error, results) => {
     if (error) {
       throw new Error(`error getting song ${error.message}`);
     } else if (results) {
@@ -107,9 +111,53 @@ async function song(req, res) {
   });
 }
 
+async function artistForTrack(req, res) {
+  const { id } = req.params;
+  connection.query(`WITH ids AS 
+  (SELECT DISTINCT artist_id
+  From SongBy
+  WHERE track_id = '${id}')
+  SELECT artist_name
+  FROM Artists JOIN ids ON artist_id;`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting artists associated with song ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function albumForTrack(req, res) {
+  const { albumid } = req.params;
+  connection.query(`SELECT album_name
+  FROM Albums
+  WHERE album_id = '${albumid}'`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting album associated with song ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+// async function song(req, res) {
+//   const { id } = req.params;
+//   connection.query(`SELECT *
+//   FROM Songs
+//   WHERE track_id = '${id}';`, (error, results) => {
+//     if (error) {
+//       throw new Error(`error getting song ${error.message}`);
+//     } else if (results) {
+//       res.json({ data: results })
+//     }
+//   });
+// }
+
 module.exports = {
   recommendedSongs,
   defaultPopularSongs,
   recentSongs,
-  song
+  song,
+  artistForTrack,
+  albumForTrack
 }
