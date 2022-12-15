@@ -47,7 +47,7 @@ function Search() {
     const handleCountryChange = (value) => setCountry(value);
     const handleGenreChange = (value) => setGenre(value);
     const handleTypeChange = (value) => setType(value);
-    const handleQueryChange = (value) => setQuery(value);
+    const handleQueryChange = (e) => setQuery(e.target.value);
 
     const submitSearch = async () => {
         if (type === 'Song') {
@@ -102,16 +102,15 @@ function Search() {
         } else if (type === 'Album') {
             const res = await searchAlbum(query,
                 genre, popularity, country);
-            const artist = await getArtistForAlbum(res.data.album_id);
-            const songs = await getSongsInAlbum(res.data.album_id);
-            const similarAlbums = await getSimilarAlbums(res.data.album_id);
+            console.log(res)
             const formatted = [];
             res.data.map((item) => {
                 formatted.push({
-                    "name": res.data.album_name,
-                    "artist": artist.data.artist_name,
-                    "songs": songs.data.track_name,
-                    "other_albums": similarAlbums.data.album_name,
+                    "album_id": item.album_id,
+                    "name": item.album_name,
+                    // "artist": artist,
+                    // "songs": songs.data.track_name,
+                    // "other_albums": similarAlbums.data.album_name,
                 });
             });
             navigate('/results/album', {state: {results: formatted}});

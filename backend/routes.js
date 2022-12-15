@@ -287,13 +287,11 @@ async function searchArtist(req, res) {
 
 async function searchAlbum(req, res) {
   const { query } = req.params;
-  const { genre, popularity, country } = req.params;
+  const { genre, popularity, country } = req.query;
   connection.query(`SELECT *
   FROM Albums A JOIN AlbumBy B ON A.album_id = B.album_id JOIN Genres G ON B.artist_id = G.artist_id
   WHERE album_name LIKE '%${query}%'
-  ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
-  ${!genre ? `AND genre = '${genre}'` : ``}
-  ${!country ? `AND country = '${country}'` : ``}
+  ${genre !== '' ? `AND G.genre = '${genre}'` : ``}
   LIMIT 10
   `, (error, results) => {
     if (error) {
@@ -307,8 +305,8 @@ async function searchAlbum(req, res) {
 async function songsInAlbum(req, res) {
   const { albumid } = req.params;
   connection.query(`SELECT track_name
-  FROM Songs S JOIN Albums A
-  WHERE S.album_id = ${albumid}
+  FROM Songs S JOIN Albums A ON S.album_id = A.album_id
+  WHERE S.album_id = '${albumid}'
   `, (error, results) => {
     if (error) {
       throw new Error(`error getting songs in album ${error.message}`);
@@ -322,11 +320,13 @@ async function similarAlbums(req, res) {
   const { albumid } = req.params;
   connection.query(`SELECT album_name
   FROM Albums A JOIN AlbumBy B ON A.album_id = B.album_id
-  WHERE B.artist_id = (SELECT artist_id FROM AlbumBy WHERE album_id = ${albumid})
+  WHERE B.artist_id IN (SELECT artist_id FROM AlbumBy WHERE album_id = '${albumid}')
   `, (error, results) => {
     if (error) {
       throw new Error(`error getting similar albums ${error.message}`);
     } else if (results) {
+      console.log("SIMILAR ALBUMS")
+      console.log(results)
       res.json({ data: results })
     }
   });
