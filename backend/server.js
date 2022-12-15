@@ -51,3 +51,9 @@ app.get("/searchartist/:query", routes.searchArtist);
 
 // search for album
 app.get("/searchalbum/:query", routes.searchAlbum);
+
+// get songs in album
+app.get("/albumSongs/:albumid", routes.albumSongs);
+
+// get similar albums (same artist)
+app.get("/similarAlbums/:albumid", routes.similarAlbums);

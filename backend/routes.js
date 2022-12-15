@@ -166,6 +166,7 @@ async function collaborators(req, res) {
   )
   SELECT artist_name
   FROM Artists A JOIN Collaborators C ON A.artist_id = C.artist_id
+  LIMIT 10
   `, (error, results) => {
     if (error) {
       throw new Error(`error getting collaborators ${error.message}`);
@@ -216,6 +217,104 @@ async function explicitArtists(req, res) {
   });
 }
 
+async function searchSong(req, res) {
+  const { query } = req.params;
+  const { acousticness_low, acousticness_high,
+    danceability_low, danceability_high,
+    energy_low, energy_high,
+    instrumentalness_low, instrumentalness_high,
+    loudness_low, loudness_high,
+    valence_low, valence_high,
+    genre, year, popularity, country } = req.query;
+  connection.query(`SELECT *
+  FROM Songs S JOIN SongBy B ON S.track_id = B.track_id JOIN Genres G ON B.artist_id = G.artist_id JOIN Artist A ON G.artist_id = A.artist_id
+  WHERE track_name LIKE '%${query}%' 
+  ${danceability_low !== 25 || danceability_high !== 75 ? `AND danceability BETWEEN ${danceability_low} AND ${danceability_high}` : ``}
+  ${energy_low !== 25 || energy_high !== 75 ? `AND energy BETWEEN ${energy_low} AND ${energy_high}` : ``}
+  ${acousticness_low !== 25 || acousticness_high !== 75 ? `AND acousticness BETWEEN ${acousticness_low} AND ${acousticness_high}` : ``}
+  ${loudness_low !== 25 || loudness_high !== 75 ? `AND loudness BETWEEN ${loudness_low} AND ${loudness_high}` : ``}
+  ${instrumentalness_low !== 25 || instrumentalness_high !== 75 ? `AND instrumentalness BETWEEN ${instrumentalness_low} AND ${instrumentalness_high}` : ``}
+  ${valence_low !== 25 || valence_high !== 75 ? `AND valence BETWEEN ${valence_low} AND ${valence_high}` : ``}
+  ${year !== 1960 ? `AND release_date LIKE %${year}%` : ``}
+  ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
+  ${!genre ? `AND genre = '${genre}'` : ``}
+  ${!country ? `AND country = '${country}'` : ``}
+  LIMIT 10
+  `, (error, results) => {
+    if (error) {
+      throw new Error(`error getting song search results ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function searchArtist(req, res) {
+  const { query } = req.params;
+  const { genre, popularity, country } = req.params;
+  connection.query(`SELECT *
+  FROM Artists A JOIN Genres G ON A.artist_id = G.artist_id
+  WHERE artist_name LIKE '%${query}%'
+  ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
+  ${!genre ? `AND genre = '${genre}'` : ``}
+  ${!country ? `AND country = '${country}'` : ``}
+  LIMIT 10
+  `, (error, results) => {
+    if (error) {
+      throw new Error(`error getting artist search results ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function searchAlbum(req, res) {
+  const { query } = req.params;
+  const { genre, popularity, country } = req.params;
+  connection.query(`SELECT *
+  FROM Albums A JOIN AlbumBy B ON A.album_id = B.album_id JOIN Genres G ON B.artist_id = G.artist_id
+  WHERE album_name LIKE '%${query}%'
+  ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
+  ${!genre ? `AND genre = '${genre}'` : ``}
+  ${!country ? `AND country = '${country}'` : ``}
+  LIMIT 10
+  `, (error, results) => {
+    if (error) {
+      throw new Error(`error getting album search results ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function songsInAlbum(req, res) {
+  const { albumid } = req.params;
+  connection.query(`SELECT track_name
+  FROM Songs S JOIN Albums A
+  WHERE S.album_id = ${albumid}
+  `, (error, results) => {
+    if (error) {
+      throw new Error(`error getting songs in album ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function similarAlbums(req, res) {
+  const { albumid } = req.params;
+  connection.query(`SELECT album_name
+  FROM Albums A JOIN AlbumBy B ON A.album_id = B.album_id
+  WHERE B.artist_id = (SELECT artist_id FROM AlbumBy WHERE album_id = ${albumid})
+  `, (error, results) => {
+    if (error) {
+      throw new Error(`error getting similar albums ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
 module.exports = {
   recommendedSongs,
   defaultPopularSongs,
@@ -227,4 +326,9 @@ module.exports = {
   collaborators,
   averageCharacteristics,
   explicitArtists,
+  searchSong,
+  searchArtist,
+  searchAlbum,
+  songsInAlbum,
+  similarAlbums
 }

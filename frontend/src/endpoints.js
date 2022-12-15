@@ -172,6 +172,24 @@ export const searchAlbum = async (query,
   }
 }
 
+export const getSongsInAlbum = async (id) => {
+  try {
+    const response = await axios.get(`${rootURL}/albumSongs/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting songs in album');
+  }
+}
+
+export const getSimilarAlbums = async (id) => {
+  try {
+    const response = await axios.get(`${rootURL}/similarAlbums/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting similar albums');
+  }
+}
+
 export const getTrackInfo = async (id) => {
   const token = window.localStorage.getItem("token");
   const {data} = await axios.get(`https://api.spotify.com/v1/tracks/${id}`, {
