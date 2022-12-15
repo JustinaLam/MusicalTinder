@@ -8,12 +8,12 @@ function Search() {
 
     const navigate = useNavigate();
 
-    const [acousticness, setAcousticness] = useState([]);
-    const [danceability, setDanceability] = useState([]);
-    const [energy, setEnergy] = useState([]);
-    const [instrumentalness, setInstrumentalness] = useState([]);
-    const [loudness, setLoudness] = useState([]);
-    const [valence, setValence] = useState([]);
+    const [acousticness, setAcousticness] = useState([25, 75]);
+    const [danceability, setDanceability] = useState([25, 75]);
+    const [energy, setEnergy] = useState([25, 75]);
+    const [instrumentalness, setInstrumentalness] = useState([25, 75]);
+    const [loudness, setLoudness] = useState([25, 75]);
+    const [valence, setValence] = useState([25, 75]);
     const [year, setYear] = useState(1960);
     const [popularity, setPopularity] = useState(50);
     const [country, setCountry] = useState('');
@@ -47,7 +47,7 @@ function Search() {
     const handleCountryChange = (value) => setCountry(value);
     const handleGenreChange = (value) => setGenre(value);
     const handleTypeChange = (value) => setType(value);
-    const handleQueryChange = (value) => setQuery(value);
+    const handleQueryChange = (e) => setQuery(e.target.value);
 
     const submitSearch = async () => {
         if (type === 'Song') {
@@ -62,42 +62,35 @@ function Search() {
             const formatted = [];
             res.data.map((item) => {
                 formatted.push({
-                    "name": res.data.track_name,
-                    "artist": res.data.artist_name,
-                    "album": res.data.album_name,
-                    "release_date": res.data.release_date,
-                    "explicit": res.data.explicit,
-                    "danceability": res.data.danceability,
-                    "energy": res.data.energy,
-                    "loudness": res.data.loudness,
-                    "acousticness": res.data.acousticness,
-                    "instrumentalness": res.data.instrumentalness,
-                    "valence": res.data.valence,
-                    "tempo": res.data.tempo,
+                    "track_id": item.track_id,
+                    "name": item.track_name,
+                    "artist": item.artist_name,
+                    "album": item.album_name,
+                    "release_date": item.release_date.substring(0, 4),
+                    "explicit": item.explicit,
+                    "danceability": item.danceability,
+                    "energy": item.energy,
+                    "loudness": item.loudness,
+                    "acousticness": item.acousticness,
+                    "instrumentalness": item.instrumentalness,
+                    "valence": item.valence,
+                    "tempo": item.tempo,
                 });
             });
             navigate('/results/song', {state: {results: formatted}});
         } else if (type === 'Artist') {
             const res = await searchArtist(query,
                 genre, popularity, country);
-            const collaborators = await getCollaborators(res.data.artist_id);
-            const averageCharacteristics = await getAverageCharacteristics(res.data.artist_id);
             const formatted = [];
             res.data.map((item) => {
                 formatted.push({
-                    "name": res.data.artist_name,
-                    "listeners": res.data.listeners,
-                    "country": res.data.country,
-                    "danceability": averageCharacteristics.data.danceability,
-                    "energy": averageCharacteristics.data.energy,
-                    "loudness": averageCharacteristics.data.loudness,
-                    "acousticness": averageCharacteristics.data.acousticness,
-                    "instrumentalness": averageCharacteristics.data.instrumentalness,
-                    "valence": averageCharacteristics.data.valence,
-                    "tempo": averageCharacteristics.data.tempo,
-                    "collaborators": collaborators.data.artist_name,
+                    "artist_id": item.artist_id,
+                    "name": item.artist_name,
+                    "listeners": item.listeners,
+                    "country": item.country
                 });
             });
+            console.log(formatted)
             navigate('/results/artist', {state: {results: formatted}});
         } else if (type === 'Album') {
             const res = await searchAlbum(query,
@@ -108,6 +101,7 @@ function Search() {
             const formatted = [];
             res.data.map((item) => {
                 formatted.push({
+                    "album_id": res.data.album_id,
                     "name": res.data.album_name,
                     "artist": artist.data.artist_name,
                     "songs": songs.data.track_name,

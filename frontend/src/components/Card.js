@@ -20,12 +20,19 @@ const Card = ({song}) => {
   }
 
   useEffect(() => {
-    getAlbumForTrack(song.album_id).then((album_response) => setAlbum(album_response.data[0].album_name));
-    getArtistForTrack(song.track_id).then((artist_response) => setArtist(artist_response.data.artist_name));
-    getTrackInfo(song.track_id).then((response) => {
-      setImage(response.album.images[0].url);
-      setAudio(new Audio(response.preview_url));
-    });
+    async function fetchData() {
+      const artist_response = await getArtistForTrack(song.track_id);
+      setArtist(artist_response.data.artist_name);
+
+      const album_response = await getAlbumForTrack(song.album_id);
+      setAlbum(album_response.data[0].album_name);
+
+      const res = await getTrackInfo(song.track_id);
+      setImage(res.album.images[0].url);
+      setAudio(new Audio(res.preview_url));
+    }
+    
+    fetchData();
   }, []);
 
     return (

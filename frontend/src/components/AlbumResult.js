@@ -1,13 +1,8 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import { getAlbumInfo } from "../endpoints";
 
-// function SongResult({result}) {
-function AlbumResult() {
-    const result = {
-        "name": "Album Name",
-        "artist": "Cool Artist",
-        "songs": ["song1", "song2", "song3", "song4", "song5", "song6", "song7"],
-        "similar_albums": ["album1", "album2", "album3", "album4", "album5", "album6", "album7"]
-    }
+function AlbumResult({result}) {
+
     return (
         <div className="w-3/5 h-3/4 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <div className="flex flex-col items-start space-y-2">

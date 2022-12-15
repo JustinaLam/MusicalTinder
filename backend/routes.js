@@ -55,30 +55,17 @@ async function recommendedSongs(req, res) {
 // 12 sec without limit to 200ms
 async function defaultPopularSongs(req, res) {
   connection.query(`WITH PopularArtists AS (
-    SELECT ROW_NUMBER() OVER (ORDER BY listeners DESC) row_num, artist_id, artist_name
+    SELECT ROW_NUMBER() OVER (ORDER BY listeners DESC) artist_rank, artist_id, artist_name
     FROM Artists
-    ORDER BY listeners DESC
-    LIMIT 3)
-    (SELECT *
-    FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
+    LIMIT 3),
+    PopularArtistsSongs AS (SELECT S.*, P.*,
+            ROW_NUMBER() OVER (PARTITION BY P.artist_id ORDER BY S.release_date DESC) AS songNum
+    FROM SongBy B JOIN Songs S ON S.track_id = B.track_id
           JOIN PopularArtists P ON B.artist_id = P.artist_id
-    WHERE P.row_num = 1
-    ORDER BY S.release_date DESC
-    LIMIT 4)
-    UNION 
-    (SELECT *
-    FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
-          JOIN PopularArtists P ON B.artist_id = P.artist_id
-    WHERE P.row_num = 2
-    ORDER BY S.release_date DESC
-    LIMIT 3)
-    UNION
-    (SELECT *
-    FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
-          JOIN PopularArtists P ON B.artist_id = P.artist_id
-    WHERE P.row_num = 3
-    ORDER BY S.release_date DESC
-    LIMIT 3)`, (error, results) => {
+    WHERE P.artist_rank < 4
+    )
+  SELECT PAS.* FROM PopularArtistsSongs PAS
+  WHERE songNum < 4;`, (error, results) => {
     if (error) {
       throw new Error(`error getting default popular songs ${error.message}`);
     } else if (results) {
@@ -171,19 +158,21 @@ async function albumForTrack(req, res) {
 // 726ms --> 313ms (plus now orders by # of collaborations, descending)
 async function collaborators(req, res) {
   const { artistid } = req.params;
-  connection.query(`WITH Collaborators AS (
-    SELECT DISTINCT A.artist_id
-    FROM Artists A JOIN SongBy B ON A.artist_id = B.artist_id
-    WHERE A.artist_id <> '${artistid}' AND B.track_id IN (
-      SELECT S.track_id
-      FROM Songs S JOIN SongBy B ON S.track_id = B.track_id
-      WHERE B.artist_id = '${artistid}'
+  connection.query(`WITH SongsByArtist AS (
+        SELECT SB.track_id
+        FROM SongBy SB JOIN Artists A on SB.artist_id = A.artist_id
+        WHERE A.artist_id = '${artistid}'
+    ),
+    CollabArtists AS (
+        SELECT SB.artist_id, COUNT(SB.track_id) AS numCollabs
+        FROM SongBy SB JOIN SongsByArtist SBA ON SB.track_id = SBA.track_id
+        GROUP BY SB.artist_id
+        ORDER BY numCollabs DESC
     )
-  )
-  SELECT artist_name
-  FROM Artists A JOIN Collaborators C ON A.artist_id = C.artist_id
-  LIMIT 10
-  `, (error, results) => {
+    SELECT A.artist_name, CA.numCollabs
+    FROM CollabArtists CA JOIN Artists A ON CA.artist_id = A.artist_id
+    WHERE A.artist_id <> '${artistid}'
+    LIMIT 10`, (error, results) => {
     if (error) {
       throw new Error(`error getting collaborators ${error.message}`);
     } else if (results) {
@@ -243,19 +232,21 @@ async function searchSong(req, res) {
     loudness_low, loudness_high,
     valence_low, valence_high,
     genre, year, popularity, country } = req.query;
-  connection.query(`SELECT *
-  FROM Songs S USE INDEX(acousticness, danceability, energy, instrumentalness, loudness, valence) JOIN SongBy B ON S.track_id = B.track_id JOIN Genres G ON B.artist_id = G.artist_id JOIN Artists A ON G.artist_id = A.artist_id
+    console.log(query);
+    console.log(acousticness_low, acousticness_high, danceability_low, danceability_high, energy_low, energy_high, instrumentalness_low, instrumentalness_high, loudness_low, loudness_high, valence_low, valence_high, genre, year, popularity, country)
+  connection.query(`SELECT DISTINCT S.track_id AS track_id, S.track_name AS track_name, A.artist_name AS artist_name, L.album_name AS album_name, explicit, release_date, danceability, energy, acousticness, instrumentalness, loudness, valence, tempo
+  FROM Songs S USE INDEX(acousticness, danceability, energy, instrumentalness, loudness, valence) JOIN SongBy B ON S.track_id = B.track_id JOIN Genres G ON B.artist_id = G.artist_id JOIN Artists A ON G.artist_id = A.artist_id JOIN Albums L ON S.album_id = L.album_id
   WHERE track_name LIKE '%${query}%' 
-  ${danceability_low !== 25 || danceability_high !== 75 ? `AND danceability BETWEEN ${danceability_low} AND ${danceability_high}` : ``}
-  ${energy_low !== 25 || energy_high !== 75 ? `AND energy BETWEEN ${energy_low} AND ${energy_high}` : ``}
-  ${acousticness_low !== 25 || acousticness_high !== 75 ? `AND acousticness BETWEEN ${acousticness_low} AND ${acousticness_high}` : ``}
-  ${loudness_low !== 25 || loudness_high !== 75 ? `AND loudness BETWEEN ${loudness_low} AND ${loudness_high}` : ``}
-  ${instrumentalness_low !== 25 || instrumentalness_high !== 75 ? `AND instrumentalness BETWEEN ${instrumentalness_low} AND ${instrumentalness_high}` : ``}
-  ${valence_low !== 25 || valence_high !== 75 ? `AND valence BETWEEN ${valence_low} AND ${valence_high}` : ``}
-  ${year !== 1960 ? `AND release_date LIKE '%${year}%'` : ``}
-  ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
-  ${!genre ? `AND genre = '${genre}'` : ``}
-  ${!country ? `AND country = '${country}'` : ``}
+  ${Number(danceability_low) !== 25 || Number(danceability_high) !== 75 ? `AND danceability BETWEEN ${Number(danceability_low)} / 100 AND ${Number(danceability_high)} / 100` : ``}
+  ${Number(energy_low) !== 25 || Number(energy_high) !== 75 ? `AND energy BETWEEN ${Number(energy_low)} / 100 AND ${Number(energy_high)} / 100 ` : ``}
+  ${Number(acousticness_low) !== 25 || Number(acousticness_high) !== 75 ? `AND acousticness BETWEEN ${Number(acousticness_low)} / 100 AND ${Number(acousticness_high)} / 100` : ``}
+  ${Number(loudness_low) !== 25 || Number(loudness_high) !== 75 ? `AND loudness BETWEEN ${Number(loudness_low)} AND ${Number(loudness_high)}` : ``}
+  ${Number(instrumentalness_low) !== 25 || Number(instrumentalness_high) !== 75 ? `AND instrumentalness BETWEEN ${Number(instrumentalness_low)} / 100 AND ${instrumentalness_high} / 100` : ``}
+  ${Number(valence_low) !== 25 || Number(valence_high) !== 75 ? `AND valence BETWEEN ${Number(valence_low)} / 100 AND ${Number(valence_high)} / 100` : ``}
+  ${Number(year) !== 1960 ? `AND release_date LIKE '%${Number(year)}%'` : ``}
+  ${Number(popularity) !== 50 ? `AND listeners BETWEEN ${Number(popularity)} / 100 * 2000000 AND ${Number(popularity)} / 100 * 5000000` : ``}
+  ${genre !== '' ? `AND genre = '${genre}'` : ``}
+  ${country !== '' ? `AND country = '${country}'` : ``}
   LIMIT 10
   `, (error, results) => {
     if (error) {
@@ -268,13 +259,13 @@ async function searchSong(req, res) {
 
 async function searchArtist(req, res) {
   const { query } = req.params;
-  const { genre, popularity, country } = req.params;
-  connection.query(`SELECT *
+  const { genre, popularity, country } = req.query;
+  connection.query(`SELECT DISTINCT A.artist_id AS artist_id, A.artist_name AS artist_name, A.listeners AS listeners, A.country AS country
   FROM Artists A JOIN Genres G ON A.artist_id = G.artist_id
   WHERE artist_name LIKE '%${query}%'
-  ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
-  ${!genre ? `AND genre = '${genre}'` : ``}
-  ${!country ? `AND country = '${country}'` : ``}
+  ${Number(popularity) !== 50 ? `AND listeners BETWEEN ${Number(popularity)} / 100 * 2000000 AND ${Number(popularity)} / 100 * 5000000` : ``}
+  ${genre !== '' ? `AND genre = '${genre}'` : ``}
+  ${country !== '' ? `AND country = '${country}'` : ``}
   LIMIT 10
   `, (error, results) => {
     if (error) {
@@ -287,13 +278,13 @@ async function searchArtist(req, res) {
 
 async function searchAlbum(req, res) {
   const { query } = req.params;
-  const { genre, popularity, country } = req.params;
+  const { genre, popularity, country } = req.query;
   connection.query(`SELECT *
   FROM Albums A JOIN AlbumBy B ON A.album_id = B.album_id JOIN Genres G ON B.artist_id = G.artist_id
   WHERE album_name LIKE '%${query}%'
-  ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
-  ${!genre ? `AND genre = '${genre}'` : ``}
-  ${!country ? `AND country = '${country}'` : ``}
+  ${Number(popularity) !== 50 ? `AND listeners BETWEEN ${Number(popularity)} / 100 * 2000000 AND ${Number(popularity)} / 100 * 5000000` : ``}
+  ${genre !== '' ? `AND genre = '${genre}'` : ``}
+  ${country !== '' ? `AND country = '${country}'` : ``}
   LIMIT 10
   `, (error, results) => {
     if (error) {
