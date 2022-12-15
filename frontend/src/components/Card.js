@@ -4,7 +4,7 @@ import { getAlbumForTrack, getArtistForTrack, getTrackInfo } from '../endpoints'
 const Card = ({song}) => {
 
   const [album, setAlbum] = useState('');
-  const [artist, setArtist] = useState('Banye East');
+  const [artist, setArtist] = useState('');
   const [image, setImage] = useState('');
   const [audio, setAudio] = useState(null);
   const [playing, setPlaying] = useState(false);
@@ -20,6 +20,7 @@ const Card = ({song}) => {
 
   useEffect(() => {
     getAlbumForTrack(song.album_id).then((album_response) => setAlbum(album_response.data[0].album_name));
+    getArtistForTrack(song.track_id).then((artist_response) => setArtist(artist_response.data.artist_name));
     getTrackInfo(song.track_id).then((response) => {
       setImage(response.album.images[0].url);
       setAudio(new Audio(response.preview_url));

@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { AiOutlineSearch, AiFillHome } from 'react-icons/ai';
 
 import Card from "./Card";
-import { getDefaultPopularSongs, getRecommendedSongs, getSong } from "../endpoints";
+import { getDefaultPopularSongs, getRecommendedSongs } from "../endpoints";
 
 function Homepage() {
     const [songs, setSongs] = useState([]);
@@ -12,8 +12,9 @@ function Homepage() {
 
     useEffect(() => {
         async function fetchSongs() {
-            const data = await getSong('7lmeHLHBe4nmXzuXc0HDjk');
+            const data = await getDefaultPopularSongs();
             setSongs(data.data);
+            console.log(data.data)
         }
         fetchSongs();
     }, []);
@@ -27,7 +28,6 @@ function Homepage() {
         if (swipedRight.length === 3) {
             console.log(swipedRight)
             getRecommendedSongs(swipedRight[0], swipedRight[1], swipedRight[2]).then((response) => {
-                console.log(response.data);
                 setSongs(response.data);
             });
             setSwipedRight([]);

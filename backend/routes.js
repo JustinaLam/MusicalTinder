@@ -57,28 +57,28 @@ async function defaultPopularSongs(req, res) {
     FROM Artists
     ORDER BY listeners DESC
     LIMIT 3)
-    (SELECT S.track_name AS track_name, artist_name
+    (SELECT *
     FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
           JOIN PopularArtists P ON B.artist_id = P.artist_id
     WHERE P.row_num = 1
     ORDER BY S.release_date DESC
     LIMIT 4)
     UNION 
-    (SELECT S.track_name AS track_name, artist_name
+    (SELECT *
     FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
           JOIN PopularArtists P ON B.artist_id = P.artist_id
     WHERE P.row_num = 2
     ORDER BY S.release_date DESC
     LIMIT 3)
     UNION
-    (SELECT S.track_name AS track_name, artist_name
+    (SELECT *
     FROM Songs S JOIN SongBy B ON S.track_id = B.track_id 
           JOIN PopularArtists P ON B.artist_id = P.artist_id
     WHERE P.row_num = 3
     ORDER BY S.release_date DESC
     LIMIT 3)`, (error, results) => {
     if (error) {
-      throw new Error(`error getting default recent popular songs ${error.message}`);
+      throw new Error(`error getting default popular songs ${error.message}`);
     } else if (results) {
       res.json({ data: results })
     }
@@ -125,12 +125,12 @@ async function genres(req, res) {
 
 async function artistForTrack(req, res) {
   const { id } = req.params;
-  connection.query(`WITH ids AS 
+  connection.query(`WITH IDs AS 
   (SELECT DISTINCT artist_id
   From SongBy
   WHERE track_id = '${id}')
   SELECT artist_name
-  FROM Artists JOIN ids ON artist_id`, (error, results) => {
+  FROM Artists A JOIN IDs I ON A.artist_id = I.artist_id`, (error, results) => {
     if (error) {
       throw new Error(`error getting artists associated with song ${error.message}`);
     } else if (results) {

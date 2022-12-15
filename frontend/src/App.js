@@ -45,8 +45,8 @@ function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/search" element={<Search />} />
           <Route path="/song" element={<SongResults />} />
-          <Route path="/artist" element={<ArtistResults />} />
-          <Route path="/album" element={<AlbumResults />} />
+          {/* <Route path="/artist" element={<ArtistResults />} /> */}
+          {/* <Route path="/album" element={<AlbumResults />} /> */}
         </Routes>
       }
     </div>
