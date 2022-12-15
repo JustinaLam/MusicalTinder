@@ -68,6 +68,7 @@ export const getGenres = async () => {
   } catch (err) {
     throw new Error('error getting genres');
   }
+}
 
 export const getArtistForTrack = async (id) => {
   try {
