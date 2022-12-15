@@ -95,9 +95,7 @@ function Search() {
         } else if (type === 'Album') {
             const res = await searchAlbum(query,
                 genre, popularity, country);
-            const artist = await getArtistForAlbum(res.data.album_id);
-            const songs = await getSongsInAlbum(res.data.album_id);
-            const similarAlbums = await getSimilarAlbums(res.data.album_id);
+            console.log(res)
             const formatted = [];
             res.data.map((item) => {
                 formatted.push({
