@@ -10,7 +10,6 @@ const connection = mysql.createConnection({
 });
 connection.connect();
 
-// 900 to 236 ms separate indices
 async function recommendedSongs(req, res) {
   const { acousticness1, danceability1, energy1, instrumentalness1, tempo1, valence1,
     acousticness2, danceability2, energy2, instrumentalness2, tempo2, valence2,
@@ -154,8 +153,6 @@ async function albumForTrack(req, res) {
   });
 }
 
-// get collaborators (recommended artists)
-// 726ms --> 313ms (plus now orders by # of collaborations, descending)
 async function collaborators(req, res) {
   const { artistid } = req.params;
   connection.query(`WITH SongsByArtist AS (
@@ -200,7 +197,6 @@ async function averageCharacteristics(req, res) {
   });
 }
 
-// 20s 870ms --> 7s 322ms
 async function explicitArtists(req, res) {
   connection.query(`
     WITH ExplicitCount AS (
@@ -222,7 +218,6 @@ async function explicitArtists(req, res) {
   });
 }
 
-// 700 - 200
 async function searchSong(req, res) {
   const { query } = req.params;
   const { acousticness_low, acousticness_high,
@@ -232,8 +227,6 @@ async function searchSong(req, res) {
     loudness_low, loudness_high,
     valence_low, valence_high,
     genre, year, popularity, country } = req.query;
-    console.log(query);
-    console.log(acousticness_low, acousticness_high, danceability_low, danceability_high, energy_low, energy_high, instrumentalness_low, instrumentalness_high, loudness_low, loudness_high, valence_low, valence_high, genre, year, popularity, country)
   connection.query(`SELECT DISTINCT S.track_id AS track_id, S.track_name AS track_name, A.artist_name AS artist_name, L.album_name AS album_name, explicit, release_date, danceability, energy, acousticness, instrumentalness, loudness, valence, tempo
   FROM Songs S USE INDEX(acousticness, danceability, energy, instrumentalness, loudness, valence) JOIN SongBy B ON S.track_id = B.track_id JOIN Genres G ON B.artist_id = G.artist_id JOIN Artists A ON G.artist_id = A.artist_id JOIN Albums L ON S.album_id = L.album_id
   WHERE track_name LIKE '%${query}%' 

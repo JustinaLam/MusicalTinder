@@ -216,6 +216,24 @@ function Search() {
                             />
                         </div>
                     </div>
+                    <div className="flex flex-row mb-1">
+                        <div className="w-1/3 mt-1">Explicit</div>
+                        <div>
+                            <Select
+                                showSearch
+                                className="w-2/3 w-[175px]"
+                                placeholder="Select explicitness"
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                    (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={[
+                                    { value: "Yes" },
+                                    { value: "No" }
+                                ]}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="w-[100px] h-8 flex flex-row items-center justify-center bg-white mt-10 p-2 rounded opacity-90 shadow hover:shadow-2xl ease-in transition-shadow">
