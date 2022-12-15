@@ -153,6 +153,7 @@ async function albumForTrack(req, res) {
 }
 
 // get collaborators (recommended artists)
+// 726ms --> 313ms (plus now orders by # of collaborations, descending)
 async function collaborators(req, res) {
   const { artistid } = req.params;
   connection.query(`WITH Collaborators AS (
