@@ -42,9 +42,9 @@ export const getDefaultPopularSongs = async () => {
   }
 };
 
-export const getRecentSongs = async () => {
+export const getRecentSongs = async (id) => {
   try {
-    const response = await axios.get(`${rootURL}/recentSongs`);
+    const response = await axios.get(`${rootURL}/recentSongs/${id}`);
     return response.data;
   } catch (err) {
     throw new Error('error getting recent songs');
@@ -85,6 +85,90 @@ export const getAlbumForTrack = async (id) => {
     return response.data;
   } catch (err) {
     throw new Error('error getting album for track');
+  }
+}
+
+export const getCollaborators = async (id) => {
+  try {
+    const response = await axios.get(`${rootURL}/collaborators/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting collaborators');
+  }
+}
+
+export const getAverageCharacteristics = async (id) => {
+  try {
+    const response = await axios.get(`${rootURL}/averageCharacteristics/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting average characteristics for artist');
+  }
+}
+
+export const getExplicitArtists = async () => {
+  try {
+    const response = await axios.get(`${rootURL}/explicitArtists`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting explicit artists');
+  }
+}
+
+export const searchSong = async (query, 
+  acousticness_low, acousticness_high,
+  danceability_low, danceability_high,
+  energy_low, energy_high,
+  instrumentalness_low, instrumentalness_high,
+  loudness_low, loudness_high,
+  valence_low, valence_high, 
+  genre, year, popularity, country) => {
+  try {
+    const response = await axios.get(`${rootURL}/searchsong/${query}`, 
+    { 
+      params: { 
+        acousticness_low, acousticness_high,
+        danceability_low, danceability_high,
+        energy_low, energy_high,
+        instrumentalness_low, instrumentalness_high,
+        loudness_low, loudness_high,
+        valence_low, valence_high,
+        genre, year, popularity, country
+      } 
+    });
+    return response.data;
+  } catch (err) {
+    throw new Error('error searching song');
+  }
+}
+
+export const searchArtist = async (query, 
+  genre, popularity, country) => {
+  try {
+    const response = await axios.get(`${rootURL}/searchartist/${query}`, 
+    { 
+      params: {
+        genre, popularity, country
+      } 
+    });
+    return response.data;
+  } catch (err) {
+    throw new Error('error searching artist');
+  }
+}
+
+export const searchAlbum = async (query, 
+  genre, popularity, country) => {
+  try {
+    const response = await axios.get(`${rootURL}/searchalbum/${query}`, 
+    { 
+      params: {
+        genre, popularity, country
+      } 
+    });
+    return response.data;
+  } catch (err) {
+    throw new Error('error searching album');
   }
 }
 

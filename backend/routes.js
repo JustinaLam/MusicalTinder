@@ -42,7 +42,7 @@ async function recommendedSongs(req, res) {
       instrumentalness BETWEEN ${instrumentalness_low} AND ${instrumentalness_high} AND
       valence BETWEEN ${valence_low} AND ${valence_high} AND
       tempo BETWEEN ${tempo_low} AND ${tempo_high}
-      LIMIT 10;`, (error, results) => {
+      LIMIT 10`, (error, results) => {
     if (error) {
       throw new Error(`error getting recommended songs ${error.message}`);
     } else if (results) {
@@ -85,11 +85,13 @@ async function defaultPopularSongs(req, res) {
   });
 }
 
-async function recentSongs(req, res) {
+async function recentSongsByArtist(req, res) {
+  const { artistid } = req.params;
   connection.query(`SELECT track_id, track_name
-  FROM Songs
+  FROM Songs S JOIN SongBy B ON S.track_id = B.track_id
+  WHERE B.artist_id = '${artistid}'
   ORDER BY release_date DESC
-  LIMIT 50;`, (error, results) => {
+  LIMIT 20`, (error, results) => {
     if (error) {
       throw new Error(`error getting most recent songs ${error.message}`);
     } else if (results) {
@@ -101,8 +103,8 @@ async function recentSongs(req, res) {
 async function song(req, res) {
   const { id } = req.params;
   connection.query(`SELECT *
-  From Songs
-  WHERE track_name = 'Testify';`, (error, results) => {
+  FROM Songs
+  WHERE track_id = '${id}'`, (error, results) => {
     if (error) {
       throw new Error(`error getting song ${error.message}`);
     } else if (results) {
@@ -128,7 +130,7 @@ async function artistForTrack(req, res) {
   From SongBy
   WHERE track_id = '${id}')
   SELECT artist_name
-  FROM Artists JOIN ids ON artist_id;`, (error, results) => {
+  FROM Artists JOIN ids ON artist_id`, (error, results) => {
     if (error) {
       throw new Error(`error getting artists associated with song ${error.message}`);
     } else if (results) {
@@ -150,25 +152,79 @@ async function albumForTrack(req, res) {
   });
 }
 
-// async function song(req, res) {
-//   const { id } = req.params;
-//   connection.query(`SELECT *
-//   FROM Songs
-//   WHERE track_id = '${id}';`, (error, results) => {
-//     if (error) {
-//       throw new Error(`error getting song ${error.message}`);
-//     } else if (results) {
-//       res.json({ data: results })
-//     }
-//   });
-// }
+// get collaborators (recommended artists)
+async function collaborators(req, res) {
+  const { artistid } = req.params;
+  connection.query(`WITH Collaborators AS (
+    SELECT DISTINCT A.artist_id
+    FROM Artists A JOIN SongBy B ON A.artist_id = B.artist_id
+    WHERE A.artist_id <> '${artistid}' AND B.track_id IN (
+      SELECT S.track_id
+      FROM Songs S JOIN SongBy B ON S.track_id = B.track_id
+      WHERE B.artist_id = '${artistid}'
+    )
+  )
+  SELECT artist_name
+  FROM Artists A JOIN Collaborators C ON A.artist_id = C.artist_id
+  `, (error, results) => {
+    if (error) {
+      throw new Error(`error getting collaborators ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function averageCharacteristics(req, res) {
+  const { artistid } = req.params;
+  connection.query(`SELECT AVG(danceability) AS danceability, 
+  AVG(energy) AS energy, 
+  AVG(acousticness) AS acousticness, 
+  AVG(instrumentalness) AS instrumentalness, 
+  AVG(valence) AS valence, 
+  AVG(tempo) AS tempo
+  FROM Songs S JOIN SongBy B ON S.track_id = B.track_id
+  WHERE B.artist_id = '${artistid}'`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting average characteristics ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
+async function explicitArtists(req, res) {
+  connection.query(`WITH ExplicitCount AS (
+    SELECT A.artist_id, COUNT(*) as num
+    FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
+    GROUP BY A.artist_id
+    HAVING COUNT(S.explicit) > 0
+    ), TotalCount AS (
+    SELECT A.artist_id, COUNT(*) as num
+    FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
+    GROUP BY A.artist_id
+    )
+    SELECT *
+    FROM Artists A JOIN ExplicitCount E ON A.artist_id = E.artist_id JOIN TotalCount T ON A.artist_id = T.artist_id
+    WHERE E.num * 2 > T.num
+  `, (error, results) => {
+    if (error) {
+      throw new Error(`error getting explicit artists ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
 
 module.exports = {
   recommendedSongs,
   defaultPopularSongs,
-  recentSongs,
+  recentSongsByArtist,
   song,
   genres,
   artistForTrack,
-  albumForTrack
+  albumForTrack,
+  collaborators,
+  averageCharacteristics,
+  explicitArtists,
 }

@@ -19,8 +19,8 @@ app.get("/recommendedSongs", routes.recommendedSongs);
 // get default songs
 app.get("/defaultPopularSongs", routes.defaultPopularSongs);
 
-// get most recent songs
-app.get("/recentSongs", routes.recentSongs);
+// get most recent songs by artist
+app.get("/recentSongs/:artistid", routes.recentSongsByArtist);
 
 // get song info
 app.get("/song/:id", routes.song);
@@ -33,3 +33,21 @@ app.get("/artist/:trackid", routes.artistForTrack);
 
 // get album name given album id
 app.get("/album/:albumid", routes.albumForTrack);
+
+// get collaborators
+app.get("/collaborators/:artistid", routes.collaborators);
+
+// get artist's average song characteristics
+app.get("/averageCharacteristics/:artistid", routes.averageCharacteristics);
+
+// get explicit artists for search
+app.get("/explicitArtists", routes.explicitArtists);
+
+// search for song
+app.get("/searchsong/:query", routes.searchSong);
+
+// search for artist
+app.get("/searchartist/:query", routes.searchArtist);
+
+// search for album
+app.get("/searchalbum/:query", routes.searchAlbum);
