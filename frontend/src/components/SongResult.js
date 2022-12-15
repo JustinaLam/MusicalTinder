@@ -1,6 +1,6 @@
 import React from "react";
 
-function Result({result}) {
+function SongResult({result}) {
     return (
         <div className="w-3/5 h-[300px] rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <img src="https://upload.wikimedia.org/wikipedia/en/1/1a/RageAgainsttheMachineRageAgainsttheMachine.jpg" alt="Italian Trulli" 
@@ -21,4 +21,4 @@ function Result({result}) {
     );
 }
 
-export default Result;
+export default SongResult;
