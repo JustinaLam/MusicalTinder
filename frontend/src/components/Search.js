@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { AiOutlineSearch } from 'react-icons/ai';
 import {Slider, Select} from 'antd';
 import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from 'react-icons/bs';
@@ -14,6 +14,19 @@ function Search() {
     const [valence, setValence] = useState([]);
     const [year, setYear] = useState();
     const [popularity, setPopularity] = useState();
+    const [genres, setGenres] = useState([]);
+
+    useEffect(() => {
+        const getGenres = async () => {
+            const res = await getGenres();
+            const g = [];
+            res.map((genre) => {
+                return g.push({value: genre});
+            });
+            setGenres(g);
+        }
+        getGenres();
+    }, []);
 
     const handleAcousticnessChange = (value) => {
         setAcousticness([value[0], value[1]]);
@@ -46,7 +59,7 @@ function Search() {
     const handlePopularityChange = (value) => {
         setPopularity(value);
     }
-
+    
     const results = [
         {
             "name": "Testify",
@@ -145,8 +158,7 @@ function Search() {
                                 filterOption={(input, option) =>
                                     (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
                                 }
-                                options={[
-                                ]}
+                                options={genres}
                             />
                         </div>
                     </div>

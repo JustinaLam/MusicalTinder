@@ -111,6 +111,16 @@ async function song(req, res) {
   });
 }
 
+async function genres(req, res) {
+  connection.query(`SELECT DISTINCT genre FROM Genres`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting genres ${error.message}`);
+      } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
 async function artistForTrack(req, res) {
   const { id } = req.params;
   connection.query(`WITH ids AS 
@@ -158,6 +168,7 @@ module.exports = {
   defaultPopularSongs,
   recentSongs,
   song,
+  genres,
   artistForTrack,
   albumForTrack
 }

@@ -60,6 +60,15 @@ export const getSong = async (id) => {
   }
 }
 
+
+export const getGenres = async () => {
+  try {
+    const response = await axios.get(`${rootURL}/genres`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting genres');
+  }
+
 export const getArtistForTrack = async (id) => {
   try {
     const response = await axios.get(`${rootURL}/artist/${id}`);

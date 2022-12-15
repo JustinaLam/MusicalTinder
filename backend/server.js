@@ -25,6 +25,9 @@ app.get("/recentSongs", routes.recentSongs);
 // get song info
 app.get("/song/:id", routes.song);
 
+// get all genres
+app.get("/genres", routes.genres);
+
 // get artist name(s) given track id
 app.get("/artist/:trackid", routes.artistForTrack);
 
