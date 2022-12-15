@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
-import { AiOutlineSearch } from 'react-icons/ai';
+import { AiOutlineSearch, AiFillHome } from 'react-icons/ai';
 import {Slider, Select} from 'antd';
 import { getGenres, searchSong, searchArtist, searchAlbum, getCollaborators, getAverageCharacteristics, getSongsInAlbum, getSimilarAlbums, getArtistForAlbum } from '../endpoints';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 
 function Search() {
 
@@ -120,6 +120,14 @@ function Search() {
 
     return (
         <div className="w-full h-screen overflow-hidden flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-12">
+            <div className="w-5/6 flex flex-row justify-center space-x-10 mb-4">
+                <NavLink to="/">
+                    <AiFillHome size={30} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" />
+                </NavLink>
+                <NavLink to="/search">
+                    <AiOutlineSearch size={30} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" />
+                </NavLink>
+            </div>
             <div className="w-[600px] mb-4 h-16 flex flex-row items-center justify-center space-x-4 bg-white mt-10 p-4 rounded-full opacity-90 shadow hover:shadow-2xl ease-in transition-shadow">
                 <AiOutlineSearch size={30} />
                 <input type="text" value={query} placeholder="Search for a song, artist, or album!" className="w-[500px] outline-none" onChange={handleQueryChange}/>

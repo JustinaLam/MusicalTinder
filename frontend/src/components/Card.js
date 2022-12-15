@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getAlbumForTrack, getArtistForTrack, getTrackInfo } from '../endpoints';
-import { AiFillPauseCircle, AiFillPlayCircle } from 'react-icons/ai';
+import { AiFillPlayCircle, AiFillPauseCircle } from 'react-icons/ai';
 
 const Card = ({song}) => {
 

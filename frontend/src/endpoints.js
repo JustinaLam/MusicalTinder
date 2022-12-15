@@ -208,3 +208,23 @@ export const getTrackInfo = async (id) => {
   });
   return data;
 }
+
+export const getArtistInfo = async (id) => {
+  const token = window.localStorage.getItem("token");
+  const {data} = await axios.get(`https://api.spotify.com/v1/artists/${id}`, {
+      headers: {
+          Authorization: `Bearer ${token}`
+      }
+  });
+  return data;
+}
+
+export const getAlbumInfo = async (id) => {
+  const token = window.localStorage.getItem("token");
+  const {data} = await axios.get(`https://api.spotify.com/v1/albums/${id}`, {
+      headers: {
+          Authorization: `Bearer ${token}`
+      }
+  });
+  return data;
+}
