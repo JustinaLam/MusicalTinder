@@ -176,15 +176,16 @@ async function collaborators(req, res) {
   });
 }
 
+// 705ms --> 285ms
 async function averageCharacteristics(req, res) {
   const { artistid } = req.params;
-  connection.query(`SELECT AVG(danceability) AS danceability, 
-  AVG(energy) AS energy, 
-  AVG(acousticness) AS acousticness, 
-  AVG(instrumentalness) AS instrumentalness, 
-  AVG(valence) AS valence, 
+  connection.query(`SELECT AVG(danceability) AS danceability,
+  AVG(energy) AS energy,
+  AVG(acousticness) AS acousticness,
+  AVG(instrumentalness) AS instrumentalness,
+  AVG(valence) AS valence,
   AVG(tempo) AS tempo
-  FROM Songs S JOIN SongBy B ON S.track_id = B.track_id
+  FROM SongBy B JOIN Songs S ON S.track_id = B.track_id
   WHERE B.artist_id = '${artistid}'`, (error, results) => {
     if (error) {
       throw new Error(`error getting average characteristics ${error.message}`);
@@ -194,20 +195,19 @@ async function averageCharacteristics(req, res) {
   });
 }
 
+// 20s 870ms --> 7s 322ms
 async function explicitArtists(req, res) {
-  connection.query(`WITH ExplicitCount AS (
-    SELECT A.artist_id, COUNT(*) as num
-    FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
-    GROUP BY A.artist_id
-    HAVING COUNT(S.explicit) > 0
-    ), TotalCount AS (
-    SELECT A.artist_id, COUNT(*) as num
+  connection.query(`
+    WITH ExplicitCount AS (
+    SELECT A.artist_id,
+           COUNT(S.track_id) AS numTotal,
+           SUM(IF(S.explicit > 0, 1, 0)) AS numExplicit
     FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
     GROUP BY A.artist_id
     )
-    SELECT *
-    FROM Artists A JOIN ExplicitCount E ON A.artist_id = E.artist_id JOIN TotalCount T ON A.artist_id = T.artist_id
-    WHERE E.num * 2 > T.num
+    SELECT A.*
+    FROM Artists A JOIN ExplicitCount E ON A.artist_id = E.artist_id
+    WHERE E.numExplicit * 2 > E.numTotal
   `, (error, results) => {
     if (error) {
       throw new Error(`error getting explicit artists ${error.message}`);
