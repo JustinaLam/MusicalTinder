@@ -1,9 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { AiOutlineSearch } from 'react-icons/ai';
 import {Slider, Select} from 'antd';
-import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from 'react-icons/bs';
-
-import Result from "./Result";
+import { getGenres } from '../endpoints';
 
 function Search() {
     const [acousticness, setAcousticness] = useState([]);
@@ -12,20 +10,24 @@ function Search() {
     const [instrumentalness, setInstrumentalness] = useState([]);
     const [loudness, setLoudness] = useState([]);
     const [valence, setValence] = useState([]);
-    const [year, setYear] = useState();
-    const [popularity, setPopularity] = useState();
+    const [year, setYear] = useState(1960);
+    const [popularity, setPopularity] = useState(50);
+    const [country, setCountry] = useState('');
+    const [type, setType] = useState('Song');
+    const [query, setQuery] = useState('');
+
     const [genres, setGenres] = useState([]);
 
     useEffect(() => {
-        const getGenres = async () => {
+        const loadGenres= async () => {
             const res = await getGenres();
             const g = [];
-            res.map((genre) => {
-                return g.push({value: genre});
+            res.data.map((item) => {
+                g.push({value: item.genre});
             });
             setGenres(g);
         }
-        getGenres();
+        loadGenres();
     }, []);
 
     const handleAcousticnessChange = (value) => {
@@ -59,43 +61,10 @@ function Search() {
     const handlePopularityChange = (value) => {
         setPopularity(value);
     }
-    
-    const results = [
-        {
-            "name": "Testify",
-            "artist": "Rage Against The Machine",
-            "album": "The Battle of Los Angeles",
-            "album2": "The Battle of Los Angeles",
-            "album3": "The Battle of Los Angeles",
-            "album4": "The Battle of Los Angeles",
-            "album5": "The Battle of Los Angeles",
-            "album6": "The Battle of Los Angeles",
-            "album7": "The Battle of Los Angeles",
-            "album8": "The Battle of Los Angeles",
-            "album9": "The Battle of Los Angeles",
-        },
-        {
-            "name": "Tre",
-            "artist": "Rage Against The Machine",
-            "album": "The Battle of Los Angeles",
-            "album2": "The Battle of Los Angeles",
-            "album3": "The Battle of Los Angeles",
-            "album4": "The Battle of Los Angeles",
-            "album5": "The Battle of Los Angeles",
-            "album6": "The Battle of Los Angeles",
-            "album7": "The Battle of Los Angeles",
-            "album8": "The Battle of Los Angeles",
-            "album9": "The Battle of Los Angeles",
-        }
-    ]
-
-    const [idx, setIdx] = React.useState(0);
-    const next = () => setIdx(prev => Math.min(prev + 1, results.length - 1));
-    const prev = () => setIdx(prev => Math.max(prev - 1, 0));
 
     return (
         <div className="w-full h-screen overflow-hidden flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-12">
-            <div className="w-[600px] h-16 flex flex-row items-center justify-center space-x-4 bg-white mt-10 p-4 rounded-full opacity-90 shadow hover:shadow-2xl ease-in transition-shadow">
+            <div className="w-[600px] mb-4 h-16 flex flex-row items-center justify-center space-x-4 bg-white mt-10 p-4 rounded-full opacity-90 shadow hover:shadow-2xl ease-in transition-shadow">
                 <AiOutlineSearch size={30} />
                 <input type="text" placeholder="Search for a song, artist, or album!" className="w-[500px] outline-none" />
             </div>
@@ -193,10 +162,8 @@ function Search() {
                     </div>
                 </div>
             </div>
-            <div className="w-full flex flex-row justify-center items-center space-x-10">
-                <BsFillArrowLeftCircleFill size={30} style={{color: "white", cursor: "pointer"}} onClick={prev} />
-                <Result result={results[idx]} />
-                <BsFillArrowRightCircleFill size={30} style={{color: "white", cursor: "pointer"}} onClick={next} />
+            <div className="w-[100px] h-8 flex flex-row items-center justify-center bg-white mt-10 p-2 rounded opacity-90 shadow hover:shadow-2xl ease-in transition-shadow">
+                <button>Submit</button>
             </div>
         </div>
     );

@@ -53,7 +53,7 @@ app.get("/searchartist/:query", routes.searchArtist);
 app.get("/searchalbum/:query", routes.searchAlbum);
 
 // get songs in album
-app.get("/albumSongs/:albumid", routes.albumSongs);
+app.get("/albumSongs/:albumid", routes.songsInAlbum);
 
 // get similar albums (same artist)
 app.get("/similarAlbums/:albumid", routes.similarAlbums);

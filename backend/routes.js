@@ -196,19 +196,19 @@ async function averageCharacteristics(req, res) {
 
 async function explicitArtists(req, res) {
   connection.query(`WITH ExplicitCount AS (
-    SELECT A.artist_id, COUNT(*) as num
-    FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
-    GROUP BY A.artist_id
-    HAVING COUNT(S.explicit) > 0
-    ), TotalCount AS (
-    SELECT A.artist_id, COUNT(*) as num
-    FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
-    GROUP BY A.artist_id
-    )
-    SELECT *
-    FROM Artists A JOIN ExplicitCount E ON A.artist_id = E.artist_id JOIN TotalCount T ON A.artist_id = T.artist_id
-    WHERE E.num * 2 > T.num
-  `, (error, results) => {
+  SELECT A.artist_id, COUNT(*) as num
+  FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
+  GROUP BY A.artist_id
+  HAVING COUNT(S.explicit) > 0
+  ), TotalCount AS (
+  SELECT A.artist_id, COUNT(*) as num
+  FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
+  GROUP BY A.artist_id
+  )
+  SELECT *
+  FROM Artists A JOIN ExplicitCount E ON A.artist_id = E.artist_id JOIN TotalCount T ON A.artist_id = T.artist_id
+  WHERE E.num * 2 > T.num
+  LIMIT 10`, (error, results) => {
     if (error) {
       throw new Error(`error getting explicit artists ${error.message}`);
     } else if (results) {
