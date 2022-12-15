@@ -31,6 +31,9 @@ app.get("/genres", routes.genres);
 // get artist name(s) given track id
 app.get("/artist/:trackid", routes.artistForTrack);
 
+// get artist name given album id
+app.get("/artistForAlbum/:albumid", routes.artistForAlbum);
+
 // get album name given album id
 app.get("/album/:albumid", routes.albumForTrack);
 

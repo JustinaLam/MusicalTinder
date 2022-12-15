@@ -79,6 +79,15 @@ export const getArtistForTrack = async (id) => {
   }
 }
 
+export const getArtistForAlbum = async (id) => {
+  try {
+    const response = await axios.get(`${rootURL}/artistForAlbum/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error('error getting artist for album');
+  }
+}
+
 export const getAlbumForTrack = async (id) => {
   try {
     const response = await axios.get(`${rootURL}/album/${id}`);

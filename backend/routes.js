@@ -10,6 +10,7 @@ const connection = mysql.createConnection({
 });
 connection.connect();
 
+// 900 to 236 ms separate indices
 async function recommendedSongs(req, res) {
   const { acousticness1, danceability1, energy1, instrumentalness1, tempo1, valence1,
     acousticness2, danceability2, energy2, instrumentalness2, tempo2, valence2,
@@ -35,7 +36,7 @@ async function recommendedSongs(req, res) {
   const valence_high = valence * 2 / 3;
 
   connection.query(`SELECT *
-    FROM Songs
+    FROM Songs USE INDEX(acousticness, danceability, energy, instrumentalness, tempo, valence)
     WHERE danceability BETWEEN ${danceability_low} AND ${danceability_high} AND
       energy BETWEEN ${energy_low} AND ${energy_high} AND
       acousticness BETWEEN ${acousticness_low} AND ${acousticness_high} AND
@@ -51,6 +52,7 @@ async function recommendedSongs(req, res) {
   });
 }
 
+// 12 sec without limit to 200ms
 async function defaultPopularSongs(req, res) {
   connection.query(`WITH PopularArtists AS (
     SELECT ROW_NUMBER() OVER (ORDER BY listeners DESC) row_num, artist_id, artist_name
@@ -139,6 +141,19 @@ async function artistForTrack(req, res) {
   });
 }
 
+async function artistForAlbum(req, res) {
+  const { albumid } = req.params;
+  connection.query(`SELECT artist_name
+  FROM Artists A JOIN AlbumBy B ON A.artist_id = B.artist_id
+  WHERE album_id = '${albumid}'`, (error, results) => {
+    if (error) {
+      throw new Error(`error getting artist associated with album ${error.message}`);
+    } else if (results) {
+      res.json({ data: results })
+    }
+  });
+}
+
 async function albumForTrack(req, res) {
   const { albumid } = req.params;
   connection.query(`SELECT album_name
@@ -218,6 +233,7 @@ async function explicitArtists(req, res) {
   });
 }
 
+// 700 - 200
 async function searchSong(req, res) {
   const { query } = req.params;
   const { acousticness_low, acousticness_high,
@@ -228,7 +244,7 @@ async function searchSong(req, res) {
     valence_low, valence_high,
     genre, year, popularity, country } = req.query;
   connection.query(`SELECT *
-  FROM Songs S JOIN SongBy B ON S.track_id = B.track_id JOIN Genres G ON B.artist_id = G.artist_id JOIN Artist A ON G.artist_id = A.artist_id
+  FROM Songs S USE INDEX(acousticness, danceability, energy, instrumentalness, loudness, valence) JOIN SongBy B ON S.track_id = B.track_id JOIN Genres G ON B.artist_id = G.artist_id JOIN Artists A ON G.artist_id = A.artist_id
   WHERE track_name LIKE '%${query}%' 
   ${danceability_low !== 25 || danceability_high !== 75 ? `AND danceability BETWEEN ${danceability_low} AND ${danceability_high}` : ``}
   ${energy_low !== 25 || energy_high !== 75 ? `AND energy BETWEEN ${energy_low} AND ${energy_high}` : ``}
@@ -236,7 +252,7 @@ async function searchSong(req, res) {
   ${loudness_low !== 25 || loudness_high !== 75 ? `AND loudness BETWEEN ${loudness_low} AND ${loudness_high}` : ``}
   ${instrumentalness_low !== 25 || instrumentalness_high !== 75 ? `AND instrumentalness BETWEEN ${instrumentalness_low} AND ${instrumentalness_high}` : ``}
   ${valence_low !== 25 || valence_high !== 75 ? `AND valence BETWEEN ${valence_low} AND ${valence_high}` : ``}
-  ${year !== 1960 ? `AND release_date LIKE %${year}%` : ``}
+  ${year !== 1960 ? `AND release_date LIKE '%${year}%'` : ``}
   ${popularity !== 50 ? `AND listeners BETWEEN ${popularity} / 100 * 2000000 AND ${popularity} / 100 * 5000000` : ``}
   ${!genre ? `AND genre = '${genre}'` : ``}
   ${!country ? `AND country = '${country}'` : ``}
@@ -323,6 +339,7 @@ module.exports = {
   song,
   genres,
   artistForTrack,
+  artistForAlbum,
   albumForTrack,
   collaborators,
   averageCharacteristics,
