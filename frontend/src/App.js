@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Homepage from './components/Homepage'
 import Search from './components/Search'
-import SongResults from './components/SongResults'
-import ArtistResults from './components/ArtistResults'
-import AlbumResults from './components/AlbumResults'
+import Results from './components/Results'
 
 function App() {
   const CLIENT_ID = process.env.REACT_APP_CLIENT_ID
@@ -44,9 +42,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/song" element={<SongResults />} />
-          {/* <Route path="/artist" element={<ArtistResults />} /> */}
-          {/* <Route path="/album" element={<AlbumResults />} /> */}
+          <Route path="/results/:type" element={<Results/>} />
         </Routes>
       }
     </div>

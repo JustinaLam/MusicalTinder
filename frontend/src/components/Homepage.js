@@ -35,13 +35,13 @@ function Homepage() {
     }
 
     return (
-        <div className="w-full h-screen flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-16">
+        <div className="w-full h-screen flex flex-col items-center bg-opacity-10 bg-gradient-to-r from-indigo-200 via-purple-300 to-pink-200 p-12">
             <div className="w-5/6 flex flex-row justify-center space-x-10 mb-4">
                 <NavLink to="/">
-                    <AiFillHome size={30} style={{color: "white", cursor: "pointer"}}/>
+                    <AiFillHome size={30} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" />
                 </NavLink>
                 <NavLink to="/search">
-                    <AiOutlineSearch size={30} style={{color: "white", cursor: "pointer"}}/>
+                    <AiOutlineSearch size={30} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" />
                 </NavLink>
             </div>
             <div className="flex h-full align-middle">
