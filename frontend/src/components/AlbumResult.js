@@ -33,19 +33,19 @@ function AlbumResult({result}) {
 
 
     return (
-        <div className="w-3/5 h-3/4 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
+        <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <div className="flex flex-col items-start space-y-2">
             <img src={image} alt="song pic" 
                 className="w-[320px] h-[320px] rounded shadow-md w-full" draggable="false" />
-            <h3 className="font-medium text-3xl pt-4 pb-2">{result.name}</h3>
+            <h3 className="font-medium text-3xl pt-4">{result.name}</h3>
             {!loading && <h5 className="font-medium text-xl">by {artist[0].artist_name}</h5>}
             </div>
             {!loading && <div className="flex flex-col items-start space-y-2">
-                <p className="font-medium text-2xl pb-4">Songs</p>
+                <p className="font-medium text-2xl pb-1">Songs</p>
                 {songs.slice(0, 6).map((song) => (
                     <p className="text-xl">{song.track_name}</p>
                 ))}
-                <p className="font-medium text-2xl pt-4 pb-4">Similar Albums</p>
+                <p className="font-medium text-2xl pt-4 pb-1">Similar Albums</p>
                 {similarAlbums.slice(0, 6).map((song) => (
                     <p className="text-xl">{song.album_name}</p>
                 ))}

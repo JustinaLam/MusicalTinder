@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { AiOutlineSearch, AiFillHome } from 'react-icons/ai';
 import {Slider, Select} from 'antd';
-import { getGenres, searchSong, searchArtist, searchAlbum, getCollaborators, getAverageCharacteristics, getSongsInAlbum, getSimilarAlbums, getArtistForAlbum } from '../endpoints';
+import { getGenres, searchSong, searchArtist, searchAlbum } from '../endpoints';
 import { useNavigate, NavLink } from "react-router-dom";
 
 function Search() {
@@ -99,11 +99,8 @@ function Search() {
             const formatted = [];
             res.data.map((item) => {
                 formatted.push({
-                    "album_id": res.data.album_id,
-                    "name": res.data.album_name,
-                    "artist": artist.data.artist_name,
-                    "songs": songs.data.track_name,
-                    "other_albums": similarAlbums.data.album_name,
+                    "album_id": item.album_id,
+                    "name": item.album_name,
                 });
             });
             navigate('/results/album', {state: {results: formatted}});
