@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { getAlbumInfo, getArtistForAlbum, getSongsInAlbum, getSimilarAlbums } from '../endpoints';
 
 function AlbumResult({result}) {
-    // const submitSearch = async () => {
-    //     const artist = await getArtistForAlbum(res.data.album_id);
-    //     const songs = await getSongsInAlbum(res.data.album_id);
-    //     const similarAlbums = await getSimilarAlbums(res.data.album_id);
-    // }
     const [image, setImage] = useState('');
     const [artist, setArtist] = useState([]);
     const [songs, setSongs] = useState([]);
@@ -36,7 +31,6 @@ function AlbumResult({result}) {
         fetchData();
     }, [result.album_id]);
 
-    console.log(similarAlbums)
 
     return (
         <div className="w-3/5 h-3/4 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">

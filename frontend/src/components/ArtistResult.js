@@ -1,43 +1,52 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { getArtistInfo, getCollaborators, getAverageCharacteristics } from "../endpoints";
 
-// function SongResult({result}) {
-function ArtistResult() {
-    const result = {
-        "name": "Billy Joe",
-        "listeners": "420",
-        "country": "USA",
-        "danceability": "123",
-        "energy": "456",
-        "loudness": "789",
-        "acousticness": "123",
-        "instrumentalness": "456",
-        "valence": "789",
-        "tempo": "pree fast",
-        "collaborators": ["John", "Jane", "Joe", "John", "Jane", "Joe", "John", "Jane", "Joe"]
-    }
+function ArtistResult({result}) {
+
+    const [image, setImage] = useState('');
+    const [collaborators, setCollaborators] = useState([]);
+    const [averageCharacteristics, setAverageCharacteristics] = useState({});
+    const [loading, isLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchData() {
+            const res = await getArtistInfo(result.artist_id);
+            setImage(res.images[0].url);
+
+            const collaboratorsRes = await getCollaborators(result.artist_id);
+            setCollaborators(collaboratorsRes.data);
+
+            const avgCharacteristicsRes = await getAverageCharacteristics(result.artist_id);
+            setAverageCharacteristics(avgCharacteristicsRes.data);
+
+            isLoading(false);
+        }
+
+        fetchData();
+    }, [result.artist_id]);
+
     return (
         <div className="w-3/5 h-4/5 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <div className="flex flex-col items-start space-y-2">
-            <img src="https://upload.wikimedia.org/wikipedia/en/1/1a/RageAgainsttheMachineRageAgainsttheMachine.jpg" alt="Italian Trulli" 
+            <img src={image} alt="artist pic" 
             className="w-[400px] h-[400px] rounded shadow-md w-full" draggable="false" />
             <h3 className="font-medium text-3xl pt-4 pb-2">{result.name}</h3>
-            <h4 className="font-medium text-2xl">Listeners {result.listeners}</h4>
+            <h4 className="font-medium text-2xl">Listeners: {result.listeners}</h4>
             <h5 className="font-medium text-xl">From {result.country}</h5>
             </div>
-            <div className="flex flex-col items-start space-y-2">
+            {!loading && <div className="flex flex-col items-start space-y-2">
                 <p className="font-medium text-2xl pb-4">Average Statistics</p>
-                <p className="text-xl">Danceability: {result.danceability}</p>
-                <p className="text-xl">Energy: {result.energy}</p>
-                <p className="text-xl">Loudness: {result.loudness}</p>
-                <p className="text-xl">Acousticness: {result.acousticness}</p>
-                <p className="text-xl">Instrumentalness: {result.instrumentalness}</p>
-                <p className="text-xl">Valence: {result.valence}</p>
-                <p className="text-xl">Tempo: {result.tempo}</p>
+                <p className="text-xl">Danceability: {averageCharacteristics[0].danceability}</p>
+                <p className="text-xl">Energy: {averageCharacteristics[0].energy}</p>
+                <p className="text-xl">Acousticness: {averageCharacteristics[0].acousticness}</p>
+                <p className="text-xl">Instrumentalness: {averageCharacteristics[0].instrumentalness}</p>
+                <p className="text-xl">Valence: {averageCharacteristics[0].valence}</p>
+                <p className="text-xl">Tempo: {averageCharacteristics[0].tempo}</p>
                 <p className="font-medium text-2xl pt-4 pb-4">Top Collaborators</p>
-                {result.collaborators.slice(0, 6).map((artist) => (
-                    <p className="text-xl">{artist}</p>
+                {collaborators.slice(0, 6).map((item) => (
+                    <p className="text-xl">{item.artist_name}</p>
                 ))}
-            </div>
+            </div>}
         </div>
     );
 }
