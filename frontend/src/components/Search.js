@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { AiOutlineSearch, AiFillHome } from 'react-icons/ai';
 import {Slider, Select} from 'antd';
-import { getGenres, searchSong, searchArtist, searchAlbum } from '../endpoints';
+import { getGenres, searchSong, searchArtist, searchAlbum, getExplicitArtists } from '../endpoints';
 import { useNavigate, NavLink } from "react-router-dom";
 
 function Search() {
@@ -80,7 +80,7 @@ function Search() {
                 });
             });
             navigate('/results/song', {state: {results: formatted}});
-        } else if (type === 'Artist') {
+        } else if (type === 'Artist' && query !== '') {
             const res = await searchArtist(query,
                 genre, popularity, country);
             const formatted = [];
@@ -92,7 +92,18 @@ function Search() {
                     "country": item.country
                 });
             });
-            console.log(formatted)
+            navigate('/results/artist', {state: {results: formatted}});
+        } else if (type === 'Artist' && query === '' && explicit === 'Yes') {
+            const res = await getExplicitArtists();
+            const formatted = [];
+            res.data.map((item) => {
+                formatted.push({
+                    "artist_id": item.artist_id,
+                    "name": item.artist_name,
+                    "listeners": item.listeners,
+                    "country": item.country
+                });
+            });
             navigate('/results/artist', {state: {results: formatted}});
         } else if (type === 'Album') {
             console.log(explicit)
