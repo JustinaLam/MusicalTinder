@@ -199,16 +199,10 @@ async function averageCharacteristics(req, res) {
 
 async function explicitArtists(req, res) {
   connection.query(`
-    WITH ExplicitCount AS (
-    SELECT A.artist_id,
-           COUNT(S.track_id) AS numTotal,
-           SUM(IF(S.explicit > 0, 1, 0)) AS numExplicit
-    FROM Songs S JOIN SongBy ON S.track_id = SongBy.track_id JOIN Artists A ON SongBy.artist_id = A.artist_id
-    GROUP BY A.artist_id
-    )
-    SELECT A.*
-    FROM Artists A JOIN ExplicitCount E ON A.artist_id = E.artist_id
-    WHERE E.numExplicit * 2 > E.numTotal
+  SELECT DISTINCT A.artist_id, A.artist_name, A.listeners, A.country, COUNT(S.track_id) as numTotal, SUM(S.explicit) AS numExplicit
+  FROM Songs S JOIN SongBy B ON S.track_id = B.track_id JOIN Artists A on B.artist_id = A.artist_id
+  GROUP BY A.artist_id
+  HAVING numExplicit * 2 > numTotal;
   `, (error, results) => {
     if (error) {
       throw new Error(`error getting explicit artists ${error.message}`);
