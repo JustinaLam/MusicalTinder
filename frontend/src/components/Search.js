@@ -19,6 +19,7 @@ function Search() {
     const [country, setCountry] = useState('');
     const [genre, setGenre] = useState('');
     const [type, setType] = useState('Song');
+    const [explicit, setExplicit] = useState('Yes');
     const [query, setQuery] = useState('');
 
     const [genres, setGenres] = useState([]);
@@ -47,6 +48,7 @@ function Search() {
     const handleCountryChange = (value) => setCountry(value);
     const handleGenreChange = (value) => setGenre(value);
     const handleTypeChange = (value) => setType(value);
+    const handleExplicitChange = (value) => setExplicit(value);
     const handleQueryChange = (e) => setQuery(e.target.value);
 
     const submitSearch = async () => {
@@ -93,8 +95,9 @@ function Search() {
             console.log(formatted)
             navigate('/results/artist', {state: {results: formatted}});
         } else if (type === 'Album') {
+            console.log(explicit)
             const res = await searchAlbum(query,
-                genre, popularity, country);
+                genre, popularity, country, explicit);
             console.log(res)
             const formatted = [];
             res.data.map((item) => {
@@ -227,6 +230,7 @@ function Search() {
                                 filterOption={(input, option) =>
                                     (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
                                 }
+                                onChange={handleExplicitChange}
                                 options={[
                                     { value: "Yes" },
                                     { value: "No" }

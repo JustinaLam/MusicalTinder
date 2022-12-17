@@ -226,14 +226,14 @@ async function searchSong(req, res) {
     instrumentalness_low, instrumentalness_high,
     loudness_low, loudness_high,
     valence_low, valence_high,
-    genre, year, popularity, country } = req.query;
+    genre, year, popularity, country, explicit } = req.query;
   connection.query(`SELECT DISTINCT S.track_id AS track_id, S.track_name AS track_name, A.artist_name AS artist_name, L.album_name AS album_name, explicit, release_date, danceability, energy, acousticness, instrumentalness, loudness, valence, tempo
   FROM Songs S USE INDEX(acousticness, danceability, energy, instrumentalness, loudness, valence) JOIN SongBy B ON S.track_id = B.track_id JOIN Genres G ON B.artist_id = G.artist_id JOIN Artists A ON G.artist_id = A.artist_id JOIN Albums L ON S.album_id = L.album_id
   WHERE track_name LIKE '%${query}%' 
   ${Number(danceability_low) !== 25 || Number(danceability_high) !== 75 ? `AND danceability BETWEEN ${Number(danceability_low)} / 100 AND ${Number(danceability_high)} / 100` : ``}
   ${Number(energy_low) !== 25 || Number(energy_high) !== 75 ? `AND energy BETWEEN ${Number(energy_low)} / 100 AND ${Number(energy_high)} / 100 ` : ``}
   ${Number(acousticness_low) !== 25 || Number(acousticness_high) !== 75 ? `AND acousticness BETWEEN ${Number(acousticness_low)} / 100 AND ${Number(acousticness_high)} / 100` : ``}
-  ${Number(loudness_low) !== 25 || Number(loudness_high) !== 75 ? `AND loudness BETWEEN ${Number(loudness_low)} AND ${Number(loudness_high)}` : ``}
+  ${Number(loudness_low) !== 25 || Number(loudness_high) !== 75 ? `AND loudness BETWEEN (${Number(loudness_low)} + 60) / 60 AND (${Number(loudness_high)} + 60) / 60` : ``}
   ${Number(instrumentalness_low) !== 25 || Number(instrumentalness_high) !== 75 ? `AND instrumentalness BETWEEN ${Number(instrumentalness_low)} / 100 AND ${instrumentalness_high} / 100` : ``}
   ${Number(valence_low) !== 25 || Number(valence_high) !== 75 ? `AND valence BETWEEN ${Number(valence_low)} / 100 AND ${Number(valence_high)} / 100` : ``}
   ${Number(year) !== 1960 ? `AND release_date LIKE '%${Number(year)}%'` : ``}
@@ -271,16 +271,19 @@ async function searchArtist(req, res) {
 
 async function searchAlbum(req, res) {
   const { query } = req.params;
-  const { genre, popularity, country } = req.query;
-  connection.query(`SELECT *
+  const { genre, explicit } = req.query;
+  connection.query(`SELECT DISTINCT A.album_id, A.album_name, B.artist_id
   FROM Albums A JOIN AlbumBy B ON A.album_id = B.album_id JOIN Genres G ON B.artist_id = G.artist_id
   WHERE album_name LIKE '%${query}%'
   ${genre !== '' ? `AND G.genre = '${genre}'` : ``}
+  ${explicit === 'No' ? `AND NOT EXISTS (
+    SELECT S.track_id FROM Songs S WHERE S.explicit = 1 AND S.album_id = A.album_id)` : ``}
   LIMIT 10
   `, (error, results) => {
     if (error) {
       throw new Error(`error getting album search results ${error.message}`);
     } else if (results) {
+      console.log(results)
       res.json({ data: results })
     }
   });

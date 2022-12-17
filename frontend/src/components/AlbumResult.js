@@ -36,7 +36,7 @@ function AlbumResult({result}) {
         <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <div className="flex flex-col items-start space-y-2">
             <img src={image} alt="song pic" 
-                className="w-[320px] h-[320px] rounded shadow-md w-full" draggable="false" />
+                className="min-w-[320px] min-h-[320px] max-w-[320px] max-h-[320px] rounded shadow-md w-full" draggable="false" />
             <h3 className="font-medium text-3xl pt-4">{result.name}</h3>
             {!loading && <h5 className="font-medium text-xl">by {artist[0].artist_name}</h5>}
             </div>

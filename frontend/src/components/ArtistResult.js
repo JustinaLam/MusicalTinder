@@ -29,10 +29,10 @@ function ArtistResult({result}) {
         <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <div className="flex flex-col items-start space-y-2">
             <img src={image} alt="artist pic" 
-            className="w-[400px] h-[400px] rounded shadow-md w-full" draggable="false" />
-            <h3 className="font-medium text-3xl pt-4">{result.name}</h3>
-            <h4 className="font-medium text-2xl">Listeners: {result.listeners}</h4>
-            <h5 className="font-medium text-xl">From {result.country}</h5>
+            className="min-w-[320px] min-h-[320px] max-w-[320px] max-h-[320px] rounded shadow-md w-full" draggable="false" />
+            <h3 className="font-medium text-3xl pt- truncate">{result.name}</h3>
+            <h4 className="font-medium text-2xl truncate">Listeners: {result.listeners}</h4>
+            <h5 className="font-medium text-xl truncate">From {result.country}</h5>
             </div>
             {!loading && <div className="flex flex-col items-start space-y-2">
                 <p className="font-medium text-2xl pb-4">Average Statistics</p>

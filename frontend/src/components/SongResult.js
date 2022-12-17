@@ -15,11 +15,11 @@ function SongResult({result}) {
         <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
             <div className="flex flex-col items-start space-y-2">
                 <img src={image} alt="song pic" 
-                    className="w-[320px] h-[320px] rounded shadow-md w-full" draggable="false" />
-                <h3 className="font-medium text-3xl pt-4">{result.name}</h3>
-                <h4 className="font-medium text-2xl">{result.album}</h4>
-                <h5 className="font-medium text-xl">by {result.artist}</h5>
-                <h5 className="text-xl">released in {result.release_date}</h5>
+                    className="min-w-[320px] min-h-[320px] max-w-[320px] max-h-[320px] rounded shadow-md w-full" draggable="false" />
+                <h3 className="font-medium text-3xl pt-4 truncate">{result.name}</h3>
+                <h4 className="font-medium text-2xl truncate">{result.album}</h4>
+                <h5 className="font-medium text-xl truncate">by {result.artist}</h5>
+                <h5 className="text-xl truncate">released in {result.release_date}</h5>
             </div>
             <div className="flex flex-col items-start space-y-2">
                 <p className="font-medium text-2xl pb-4">Statistics</p>
