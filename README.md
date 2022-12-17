@@ -25,6 +25,15 @@ REACT_APP_CLIENT_ID=xxx
 ```
 5. In the frontend, login to Spotify using the top banner. Images and music should now be successfully fetched!
 
+### Database Setup
+In `backend/.env` copy the database host, password, database name, and port to create a MySQL connection like below.
+```
+HOST=xxx
+PASSWORD=xxx
+DATABASE=xxx
+PORT=xxx
+```
+
 ## Dependencies
 
 Our dependencies are listed in `package.json`. The main ones are listed below:
