@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AiOutlineSearch, AiFillHome } from 'react-icons/ai';
 import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from 'react-icons/bs';
+import { BiSad } from 'react-icons/bi';
 import { NavLink, useParams, useLocation } from "react-router-dom";
 import SongResult from "./SongResult";
 import ArtistResult from "./ArtistResult";
@@ -26,6 +27,7 @@ function Results() {
                 <AiOutlineSearch size={30} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" />
             </NavLink>
         </div>
+        {results.length > 0 ? 
         <div className="w-full h-screen flex flex-row justify-center items-center space-x-10 mb-4">
           <BsFillArrowLeftCircleFill size={50} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" onClick={prev} />
           {type === 'song' ? <SongResult result={results[idx]} /> : null}
@@ -33,6 +35,14 @@ function Results() {
           {type === 'album' ? <AlbumResult result={results[idx]} /> : null}
           <BsFillArrowRightCircleFill size={50} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" onClick={next} />
         </div>
+        :
+        <div className="w-full h-screen flex flex-row justify-center items-center space-x-10 mb-4">
+          <BiSad size={50} className="text-white hover:text-blue-600 transition-all ease-in fill-current cursor-pointer" onClick={prev} />
+          <p className="w-[300px] h-16 flex flex-row items-center justify-center space-x-4 bg-white p-4 rounded-full opacity-90 shadow">
+            No results found
+          </p>
+        </div>
+        }
     </div>
   )
 }

@@ -167,12 +167,12 @@ export const searchArtist = async (query,
 }
 
 export const searchAlbum = async (query, 
-  genre, popularity, country) => {
+  genre, popularity, country, explicit) => {
   try {
     const response = await axios.get(`${rootURL}/searchalbum/${query}`, 
     { 
       params: {
-        genre, popularity, country
+        genre, popularity, country, explicit
       } 
     });
     return response.data;
