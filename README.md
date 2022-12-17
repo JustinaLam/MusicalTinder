@@ -6,6 +6,8 @@
 
 `frontend/` holds all frontend logic in React, Tailwind, and JS.
 
+`preprocessing/` holds the python notebooks used to preprocess our datasets. `original.ipynb` is the code we ran to generate and upload our data, and `formatted.ipynb` is a cleaned-up version with annotations to explain what each code cell is doing.
+
 
 ## Build Instructions
 
