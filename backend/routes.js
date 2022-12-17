@@ -277,7 +277,6 @@ async function searchAlbum(req, res) {
     if (error) {
       throw new Error(`error getting album search results ${error.message}`);
     } else if (results) {
-      console.log(results)
       res.json({ data: results })
     }
   });
@@ -306,8 +305,6 @@ async function similarAlbums(req, res) {
     if (error) {
       throw new Error(`error getting similar albums ${error.message}`);
     } else if (results) {
-      console.log("SIMILAR ALBUMS")
-      console.log(results)
       res.json({ data: results })
     }
   });

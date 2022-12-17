@@ -14,15 +14,12 @@ function AlbumResult({result}) {
             setImage(res.images[0].url);
 
             const artistRes = await getArtistForAlbum(result.album_id);
-            console.log(artistRes)
             setArtist(artistRes.data);
 
             const songsRes = await getSongsInAlbum(result.album_id);
-            console.log(songsRes)
             setSongs(songsRes.data);
 
             const similarAlbumsRes = await getSimilarAlbums(result.album_id);
-            console.log(similarAlbumsRes)
             setSimilarAlbums(similarAlbumsRes.data);
 
             isLoading(false);
@@ -33,14 +30,14 @@ function AlbumResult({result}) {
 
 
     return (
-        <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
-            <div className="flex flex-col items-start space-y-2">
+        <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row p-[30px] m-6 bg-white bg-opacity-80">
+            <div className="flex flex-col w-1/2 items-start space-y-2">
             <img src={image} alt="song pic" 
                 className="min-w-[320px] min-h-[320px] max-w-[320px] max-h-[320px] rounded shadow-md w-full" draggable="false" />
-            <h3 className="font-medium text-3xl pt-4">{result.name}</h3>
-            {!loading && <h5 className="font-medium text-xl">by {artist[0].artist_name}</h5>}
+            <h3 className="w-full font-medium text-3xl pt-4 truncate">{result.name}</h3>
+            {!loading && <h5 className="w-full font-medium text-xl truncate">by {artist[0].artist_name}</h5>}
             </div>
-            {!loading && <div className="flex flex-col items-start space-y-2">
+            {!loading && <div className="flex flex-col w-1/2 pl-16 items-start space-y-2">
                 <p className="font-medium text-2xl pb-1">Songs</p>
                 {songs.slice(0, 6).map((song) => (
                     <p className="text-xl">{song.track_name}</p>

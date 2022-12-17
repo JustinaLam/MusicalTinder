@@ -26,15 +26,15 @@ function ArtistResult({result}) {
     }, [result.artist_id]);
 
     return (
-        <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row space-x-16 p-[30px] m-6 bg-white bg-opacity-80">
-            <div className="flex flex-col items-start space-y-2">
+        <div className="w-3/5 h-7/8 rounded shadow-md hover:shadow-lg flex flex-row p-[30px] m-6 bg-white bg-opacity-80">
+            <div className="flex flex-col w-1/2 items-start space-y-2">
             <img src={image} alt="artist pic" 
             className="min-w-[320px] min-h-[320px] max-w-[320px] max-h-[320px] rounded shadow-md w-full" draggable="false" />
-            <h3 className="font-medium text-3xl pt- truncate">{result.name}</h3>
-            <h4 className="font-medium text-2xl truncate">Listeners: {result.listeners}</h4>
-            <h5 className="font-medium text-xl truncate">From {result.country}</h5>
+            <h3 className="w-full font-medium text-3xl pt-4 truncate">{result.name}</h3>
+            <h4 className="w-full font-medium text-2xl truncate">Listeners: {result.listeners}</h4>
+            <h5 className="w-full font-medium text-xl truncate">From {result.country}</h5>
             </div>
-            {!loading && <div className="flex flex-col items-start space-y-2">
+            {!loading && <div className="flex flex-col w-1/2 pl-16 items-start space-y-2">
                 <p className="font-medium text-2xl pb-4">Average Statistics</p>
                 <p className="text-xl">Danceability: {averageCharacteristics[0].danceability}</p>
                 <p className="text-xl">Energy: {averageCharacteristics[0].energy}</p>

@@ -106,10 +106,8 @@ function Search() {
             });
             navigate('/results/artist', {state: {results: formatted}});
         } else if (type === 'Album') {
-            console.log(explicit)
             const res = await searchAlbum(query,
                 genre, popularity, country, explicit);
-            console.log(res)
             const formatted = [];
             res.data.map((item) => {
                 formatted.push({

@@ -14,19 +14,16 @@ function Homepage() {
         async function fetchSongs() {
             const data = await getDefaultPopularSongs();
             setSongs(data.data);
-            console.log(data.data)
         }
         fetchSongs();
     }, []);
 
     const onSwipe = (direction, index) => {
-        console.log(direction);
         if (direction === 'right') {
             setSwipedRight([...swipedRight, songs[index]])
         }
 
         if (swipedRight.length === 3) {
-            console.log(swipedRight)
             getRecommendedSongs(swipedRight[0], swipedRight[1], swipedRight[2]).then((response) => {
                 setSongs(response.data);
             });
